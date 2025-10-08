@@ -215,5 +215,11 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Model weights
-/ModelSets/*
+# Model Data
+MLData/COCO/**
+!MLData/COCO/*.yaml
+!MLData/COCO/*.py
+datasets/
+
+# VSCode
+.vscode/
