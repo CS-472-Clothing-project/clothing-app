@@ -10,7 +10,7 @@ def main():
     fileName = input("Input name of the image file (with extension): ")
     detectionMode = int(input("Select detector mode (1 = lite, 2 = full, 3 = heavy): "))
     segmentationTightness = input("Provide segmentation tightness: ")
-    imageFrame = ImageHandler.ImageHandler(fileName, segmentationTightness)
+    imageFrame = ImageHandler.ImageHandler(fileName)
     
     # landmarkDetector = PoseLandmarkDetector.PoseLandmarkDetector(imageFrame.rgbImage, detectionMode)
     
