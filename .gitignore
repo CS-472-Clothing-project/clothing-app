@@ -215,11 +215,13 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Model Data
-MLData/COCO/**
-!MLData/COCO/*.yaml
-!MLData/COCO/*.py
-datasets/
-
 # VSCode
 .vscode/
+
+# Images and video
+*.jpg
+*.png
+*.mp4
+
+# Mediapipe models
+*.task
