@@ -225,3 +225,6 @@ __marimo__/
 
 # Mediapipe models
 *.task
+
+# Result images
+MeasureLess/results
