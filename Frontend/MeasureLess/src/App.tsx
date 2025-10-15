@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import UserInput from './userInput';
 
 function Home() {
     return <h1>Home Page</h1>;
@@ -20,7 +21,8 @@ function App() {
                 <nav>
                     <Link to="/">Home</Link> |{" "}
                     <Link to="/about">About</Link> |{" "}
-                    <Link to="/contact">Contact</Link>
+                    <Link to="/contact">Contact</Link> |{" "}
+                    <Link to="/userInput.tsx">UserInput</Link>
                 </nav>
 
                 {/* Routes */}
@@ -28,6 +30,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
+                    <Route path="/userInput.tsx" element={<UserInput />} />
                 </Routes>
             </BrowserRouter>
         </>
