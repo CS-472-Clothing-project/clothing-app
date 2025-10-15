@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-//import { FaMale } from "react-icons/fa";
+import { FaMale, FaFemale, FaUser } from "react-icons/fa";
 import "./assets/react.svg";
 
 
@@ -14,8 +14,11 @@ function UserInput() {
                     width:"80px",
                     height:"80px",
                     border: "1px solid black",
+                    alignItems: "center",
+                    justifyContent: "center",
                 }}
-            >Male Icon</button>
+            ><FaMale size={32}/></button>
+
 
             <button
                 onClick={() => setBodyType("other")}
@@ -24,7 +27,7 @@ function UserInput() {
                     height:"80px",
                     border: "1px solid black",
                 }}
-            >Other Icon</button>
+            ><FaUser size={32}/></button>
 
 
             <button
@@ -34,7 +37,7 @@ function UserInput() {
                     height:"80px",
                     border: "1px solid black",
                 }}
-            >Female Icon</button>
+            ><FaFemale size={32}/></button>
 
 
 
