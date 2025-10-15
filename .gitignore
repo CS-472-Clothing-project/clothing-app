@@ -225,6 +225,7 @@ __marimo__/
 
 # Mediapipe models
 *.task
+*.tflite
 
 # Result images
 MeasureLess/results

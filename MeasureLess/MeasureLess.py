@@ -1,5 +1,7 @@
 from modules import ImageHandler
 from modules import PoseLandmarkHandler
+from modules import SegmentationHandler
+
 import cv2
 import logging
 
@@ -13,34 +15,44 @@ def main():
     segmentationTightness = input("Provide segmentation tightness in [0,1] (default .5): ")
     # print("segmentation type: ", type(segmentationTightness))
     
+    # Checking if tightness was specified
     if not segmentationTightness:
-        imageFrame = ImageHandler.ImageHandler(fileName)
+        imageHandler = ImageHandler.ImageHandler(fileName)
     else:
-        imageFrame = ImageHandler.ImageHandler(fileName, float(segmentationTightness))
+        imageHandler = ImageHandler.ImageHandler(fileName, float(segmentationTightness))
         
-    print("imageFrame type: ", type(imageFrame))
-    landmarkDetector = PoseLandmarkHandler.PoseLandmarkHandler(imageFrame, detectionMode)
+    # Creating landmark handler object using provided data
+    landmarkHandler = PoseLandmarkHandler.PoseLandmarkHandler(imageHandler, detectionMode)
     
+    # Try loading detector module
     print("Loading Detector...")
     try:
-        landmarkDetector.loadDetector()
+        landmarkHandler.loadDetector()
     except:
         logging.exception("And error occurred when loading the detector: ")
         
+    # On success, uses loaded detector to process the image (generating landmarks)
     print("Detector loaded. Running image detection...")
     try:
-        landmarkDetector.detectImage()
+        landmarkHandler.detectImage()
     except:
         logging.exception("Error when detecting image: ")
         
+    # Drawing landmarks onto image using landmarks generated above
     print()
-    print("Image processed. Drawing image landmarks: ")
+    print("Landmarks processed. Drawing landmarks on image: ")
     try:
-        landmarkDetector.drawLandmarks()
+        landmarkHandler.drawLandmarks()
     except:
         logging.exception("Error while drawing landmarks: ")
         
-    landmarkDetector.saveImage()
+    # Saving landmarked image
+    landmarkHandler.saveImage()
+    
+    # Creating segmentationHandler object, processing image, and saving the result
+    segmentationHandler = SegmentationHandler.SegmentationHandler(imageHandler)
+    segmentationHandler.segmentImage()
+    segmentationHandler.saveImage()
 
 if __name__ == "__main__":
     main()

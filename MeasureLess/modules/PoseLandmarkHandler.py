@@ -23,13 +23,14 @@ class PoseLandmarkHandler:
         else:
             print("Invalid model selected")
             
-        # Saving passed ImageHandler object
+        # Saving passed ImageHandler object and initializing instance members
         self.imageHandler = imageHandler
         self.detector = None
         self.annotedImage = None
         self.processedImage = None
         
     def loadDetector(self):
+        # Setting the options for the pose landmarker and loading the detector
         baseOptions = python.BaseOptions(model_asset_path=self.landmarkerPath)
         options = vision.PoseLandmarkerOptions(
             base_options=baseOptions,
@@ -37,16 +38,17 @@ class PoseLandmarkHandler:
         self.detector = vision.PoseLandmarker.create_from_options(options)
         
     def detectImage(self):
+        # Runs the detection method and returns the processed image
         self.processedImage = self.detector.detect(self.imageHandler.mpImage)
         
-    def drawLandmarks(self):
+    def drawLandmarks(self) -> np.ndarray:
         landmarksList = self.processedImage.pose_landmarks
         
         print("Copying image...")
         self.annotedImage = np.copy(self.imageHandler.ndArrayImage)
         
         print("Entering The LOOP...")
-        # The LOOP
+        # Iterating over all landmarks found by the detector
         for i in range(len(landmarksList)):
             poseLandmarks = landmarksList[i]
             
@@ -64,10 +66,12 @@ class PoseLandmarkHandler:
                 landmarksProto,
                 solutions.pose.POSE_CONNECTIONS,
                 solutions.drawing_styles.get_default_pose_landmarks_style())
+        
         print("Drawing complete. Retuning annotated image: ")
+        # Not strictly necessary to return the image, but it might prove useful later
         return self.annotedImage
         
-    def hasDetector(self):
+    def hasDetector(self) -> bool:
         if not self.detector:
             return False
         else:
@@ -80,3 +84,7 @@ class PoseLandmarkHandler:
         except:
             logging.exception("Error while saving image: ")
         print("Image saved to results as landmarked-image.png")
+        
+    # Placeholder for future functionality
+    def displayImage(self):
+        pass
