@@ -10,9 +10,12 @@ def main():
     print("Welcome to MeasureLess, the measure-less app for tailoring.")
     
     # Creating the image object by calling the import handler
-    fileName = input("Input name of the image file (with extension): ")
-    detectionMode = int(input("Select detector mode (1 = lite, 2 = full, 3 = heavy): "))
-    segmentationTightness = input("Provide segmentation tightness in [0,1] (default .5): ")
+    # fileName = input("Input name of the image file (with extension): ")
+    # detectionMode = int(input("Select detector mode (1 = lite, 2 = full, 3 = heavy): "))
+    # segmentationTightness = input("Provide segmentation tightness in [0,1] (default .5): ")
+    fileName = "test.jpg"
+    detectionMode = 3
+    segmentationTightness = .5
     # print("segmentation type: ", type(segmentationTightness))
     
     # Checking if tightness was specified
@@ -35,6 +38,9 @@ def main():
     print("Detector loaded. Running image detection...")
     try:
         landmarkHandler.detectImage()
+        measurements = landmarkHandler.getMeasurements()
+        print(f"Estimated height = {measurements['height_mm'] / 1000}")
+
     except:
         logging.exception("Error when detecting image: ")
         

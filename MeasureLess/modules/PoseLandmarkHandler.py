@@ -11,6 +11,11 @@ from mediapipe.tasks.python import vision
 # Considering rolling this into another class. Might be more effective
 # to just inherit this or make it a member of the image handler.
 
+NOSE = 0
+LEFT_ANKLE = 27
+RIGHT_ANKLE = 28
+RIGHT_FOOT = 32
+
 class PoseLandmarkHandler:
     def __init__(self, imageHandler, landmarkerMode=2):
         # Set the model path
@@ -85,6 +90,31 @@ class PoseLandmarkHandler:
             logging.exception("Error while saving image: ")
         print("Image saved to results as landmarked-image.png")
         
+
+    def getMeasurements(self, user_height = None):
+        world_landmarks = self.processedImage.pose_world_landmarks[0] # currently working for one "pose" object at a time
+
+        def dist(a,b):
+            distanceArr =  np.linalg.norm(np.array(
+                [
+                world_landmarks[a].x - world_landmarks[b].x,
+                world_landmarks[a].y - world_landmarks[b].y,
+                world_landmarks[a].z - world_landmarks[b].z,
+                ]
+             ))
+            
+            return distanceArr*1000
+
+        body_height = dist(NOSE, RIGHT_FOOT)
+        scale = 1.0
+        if user_height:
+            scale = user_height / body_height
+        
+        return {
+            "height_mm" : body_height * scale,
+            "scale_factor" : scale ,
+        }
+    
     # Placeholder for future functionality
     def displayImage(self):
         pass
