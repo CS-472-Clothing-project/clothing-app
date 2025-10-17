@@ -2,7 +2,6 @@ from modules import ImageHandler
 from modules import PoseLandmarkHandler
 from modules import SegmentationHandler
 
-import cv2
 import logging
 
 def main():
