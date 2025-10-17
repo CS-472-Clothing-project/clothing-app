@@ -14,8 +14,8 @@ function App() {
                 {/* Navigation */}
                 <nav>
                     <Link to="/">Home</Link> |{" "}
-                    <Link to="/userInput.tsx">UserInput</Link>
-                    <Link to="/userInput.tsx">TakePicture</Link>
+                    <Link to="/userInput.tsx">UserInput</Link> |{" "}
+                    <Link to="/takePicture.tsx">TakePicture</Link>
                 </nav>
 
                 {/* Routes */}

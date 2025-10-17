@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
-const cameraOverlay = () => {
+const CameraOverlay: React.FC = () => {
     const videoRef = useRef(null); // ref to video
     const canvasRef = useRef(null); // ref to canvas to convert to img
-    const [stream, setStream] = useState(false); // MediaStream 
+    const [stream, setStream] = useState(null); // MediaStream 
     const [cameraImage, setCameraImage] = useState(null); // image
     const [facingMode, setFacingMode] = useState('user'); // front("user")/back("environment") camera state
 
@@ -16,7 +16,9 @@ const cameraOverlay = () => {
         try {
             const mediaStream = await navigator.mediaDevices.getUserMedia({
                 video: {
-                    facingMode
+                    facingMode,
+                    width: { ideal: 360 },
+                    height: { ideal: 640 },
                 },
                 audio: false
             });
@@ -33,11 +35,14 @@ const cameraOverlay = () => {
 
     }
 
-    /*
+
     const stopCamera = () => {
-
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            setStream(null);
+        }
     }
-
+    /*
     const capturePhoto = () => {
 
     }
@@ -54,6 +59,10 @@ const cameraOverlay = () => {
 
     }
     */
-
+    return (
+        <div className="camera-overlay">
+            <video ref={videoRef} autoPlay playsInline />
+        </div>
+    )
 }
-export default cameraOverlay
+export default CameraOverlay
