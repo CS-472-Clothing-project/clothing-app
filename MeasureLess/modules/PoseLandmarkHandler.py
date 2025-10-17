@@ -67,7 +67,7 @@ class PoseLandmarkHandler:
                 solutions.pose.POSE_CONNECTIONS,
                 solutions.drawing_styles.get_default_pose_landmarks_style())
         
-        print("Drawing complete. Retuning annotated image: ")
+        print("Drawing complete. Retuning annotated image.")
         # Not strictly necessary to return the image, but it might prove useful later
         return self.annotedImage
         
