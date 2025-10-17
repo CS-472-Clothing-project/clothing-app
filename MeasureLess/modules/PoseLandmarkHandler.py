@@ -8,9 +8,6 @@ from mediapipe.framework.formats import landmark_pb2
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
-# Considering rolling this into another class. Might be more effective
-# to just inherit this or make it a member of the image handler.
-
 class PoseLandmarkHandler:
     def __init__(self, imageHandler, landmarkerMode=2):
         # Set the model path
@@ -29,6 +26,7 @@ class PoseLandmarkHandler:
         self.annotedImage = None
         self.processedImage = None
         
+    # This needs to be called once
     def loadDetector(self):
         # Setting the options for the pose landmarker and loading the detector
         baseOptions = python.BaseOptions(model_asset_path=self.landmarkerPath)
@@ -37,10 +35,12 @@ class PoseLandmarkHandler:
             output_segmentation_masks=True)
         self.detector = vision.PoseLandmarker.create_from_options(options)
         
+    # This needs to be called twice
     def detectImage(self):
         # Runs the detection method and returns the processed image
         self.processedImage = self.detector.detect(self.imageHandler.mpImage)
         
+    # This needs to be called twice
     def drawLandmarks(self) -> np.ndarray:
         landmarksList = self.processedImage.pose_landmarks
         
@@ -77,6 +77,7 @@ class PoseLandmarkHandler:
         else:
             return True
         
+    # This should probably go in the imageHandler
     def saveImage(self):
         print("Saving image...")
         try:
@@ -88,3 +89,7 @@ class PoseLandmarkHandler:
     # Placeholder for future functionality
     def displayImage(self):
         pass
+    
+    # Function to pass the resultant image to the image handler
+    # def storeImage(self):
+    #     self.imageHandler.annotatedImage = np.copy(self.annotedImage)

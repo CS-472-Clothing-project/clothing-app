@@ -3,10 +3,12 @@ import numpy
 import mediapipe as mp
 
 class ImageHandler:
+    # TODO: Update members to account for both images
     def __init__(self, fileName, segTightness=.5):
         self.fileName = fileName
         self.segTightness = segTightness
         self.segmentedImage = None
+        self.annotatedImage = None
         
         try:
             print("Loading image: ", fileName)
@@ -24,3 +26,8 @@ class ImageHandler:
     # Placeholder for later when checking for image type compatibility
     def checkImageType(self):
         pass
+    
+    # Image saving function (to a file)
+    def saveImage(self, imageSelection):
+        pass
+    

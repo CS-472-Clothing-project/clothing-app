@@ -9,6 +9,7 @@ class SegmentationHandler:
         self.imageHandler = imageHandler
         self.tightness = imageHandler.segTightness
         
+    # This needs to be called twice
     def segmentImage(self):
         # Using the mediapipe pose module to set options and process the image
         # provided with imageHandler

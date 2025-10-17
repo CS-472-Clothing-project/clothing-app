@@ -4,6 +4,7 @@ from modules import SegmentationHandler
 
 import logging
 
+# TODO: Update logic to accept and process 2 images at once. One side profile, one front profile
 def main():
     # Short intro message for development
     print("Welcome to MeasureLess, the measure-less app for tailoring.")
