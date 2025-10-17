@@ -21,7 +21,8 @@ function UserInput() {
         <div className="flex flex-col">
             <h1>User Input</h1>
 
-            <div className="flex flex-row justify-around align-items-center">
+            <div className="flex flex-row justify-center items-center gap-8">
+                <div className="flex flex-col justify-center items-center">
                 <button
                     onClick={() => {setBodyType("male")}}
                     className={`w-36 h-36 border border-black rounded-lg flex justify-center items-center
@@ -31,8 +32,10 @@ function UserInput() {
                             : "border-black hover:border-blue-800 hover:w-40 hover:h-40"    // not selected
                     }`}
                 ><FaMale size={67}/></button>
+                    <h2>Male</h2>
+                </div>
 
-
+                <div className="flex flex-col justify-center items-center">
                 <button
                     onClick={() => setBodyType("other")}
                     className={`w-36 h-36 border border-black rounded-lg flex justify-center items-center
@@ -42,8 +45,10 @@ function UserInput() {
                             : "border-black hover:border-blue-800 hover:w-40 hover:h-40"
                     }`}
                 ><FaUser size={67}/></button>
+                    <h2>Pref not to say</h2>
+                </div>
 
-
+                <div className="flex flex-col justify-center items-center">
                 <button
                     onClick={() => setBodyType("female")}
                     className={`w-36 h-36 border border-black rounded-lg flex justify-center items-center
@@ -53,27 +58,32 @@ function UserInput() {
                             : "border-black hover:border-blue-800 hover:w-40 hover:h-40"
                     }`}
                 ><FaFemale size={67}/></button>
+                    <h2>Female</h2>
+                </div>
             </div>
 
 
             <p>Current body Type: {bodyType || "not set"}</p>
-            <div className="border-black flex justify-center items-center">
-            <Picker value={pickerValue} onChange={setPickerValue} wheelMode={"natural"}>
-                <Picker.Column name={"feet"}>
-                    {selections.feet.map((ft) => (
-                        <Picker.Item key={ft} value={ft}>
-                            {ft} ft.
-                        </Picker.Item>
-                    ))}
-                </Picker.Column>
-                <Picker.Column name={"inches"}>
-                    {selections.inches.map((inch) => (
-                        <Picker.Item key={inch} value={inch}>
-                            {inch} in.
-                        </Picker.Item>
-                    ))}
-                </Picker.Column>
-            </Picker>
+            <h2>Please Select a Height.</h2>
+            <div className="flex flex-row justify-center align-items-center">
+                <div className="bg-gray-100 rounded-xl shadow-lg justify-center items-center w-1/2">
+                <Picker value={pickerValue} onChange={setPickerValue} wheelMode={"normal"}>
+                    <Picker.Column name={"feet"}>
+                        {selections.feet.map((ft) => (
+                            <Picker.Item key={ft} value={ft}>
+                                {ft} ft.
+                            </Picker.Item>
+                        ))}
+                    </Picker.Column>
+                    <Picker.Column name={"inches"}>
+                        {selections.inches.map((inch) => (
+                            <Picker.Item key={inch} value={inch}>
+                                {inch} in.
+                            </Picker.Item>
+                        ))}
+                    </Picker.Column>
+                </Picker>
+                </div>
             </div>
             Selected height: <strong>{pickerValue.feet} ft {pickerValue.inches} in</strong>
         </div>
