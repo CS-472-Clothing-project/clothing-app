@@ -9,3 +9,6 @@ class MeasurementHandler:
         self.imageHandler = imageHandler
         self.measurementData = None
         self.debug = debug
+    
+    def saveToCSV(self):
+        pass
