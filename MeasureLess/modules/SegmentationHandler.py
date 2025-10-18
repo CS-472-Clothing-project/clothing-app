@@ -29,10 +29,10 @@ class SegmentationHandler:
         self.segmentedImage = np.where(condition, self.segmentedImage, backgroundImage)
         
     
-    def saveImage(self):
-        print("Saving image...")
-        try:
-            cv2.imwrite("results/segmented-image.png", self.segmentedImage)
-        except:
-            logging.exception("Error while saving image")
-        print("Image saved to results as segmented-image.png")
+    # def saveImage(self):
+    #     print("Saving image...")
+    #     try:
+    #         cv2.imwrite("results/segmented-image.png", self.segmentedImage)
+    #     except:
+    #         logging.exception("Error while saving image")
+    #     print("Image saved to results as segmented-image.png")
