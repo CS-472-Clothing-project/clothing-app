@@ -37,7 +37,7 @@ class ImageHandler:
     # For privacy concerns, check if the file exists
     # If it does, delte it
     def __del__(self):
-        if(self.debug == False):
+        if(self.debug == True):
             # Using the os library, check if the image is present, if it is and debug is False
             # Delete the image
             if os.path.isfile(self.fileName):
