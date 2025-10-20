@@ -8,9 +8,6 @@ import os
 
 class ImageHandler:
     # TODO: Update members to account for both images
-    def __init__(self, segTightness=.5):
-        # fileName and segTightness can likely be deleted and replaced
-        # with local variables
     def __init__(self, fileName, segTightness=.5, debug=True):
         self.fileName = fileName
         self.segTightness = segTightness
