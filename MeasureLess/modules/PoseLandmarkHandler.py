@@ -23,8 +23,6 @@ class PoseLandmarkHandler:
         # Saving passed ImageHandler object and initializing instance members
         self.imageHandler = imageHandler
         self.detector = None
-        self.annotedImage = None
-        self.processedImage = None
         self.debug = debug
         
     # This needs to be called once
@@ -36,17 +34,18 @@ class PoseLandmarkHandler:
             output_segmentation_masks=True)
         self.detector = vision.PoseLandmarker.create_from_options(options)
         
-    # This needs to be called twice
+    # This needs to be called once
     def detectImage(self):
         # Runs the detection method and returns the processed image
-        self.processedImage = self.detector.detect(self.imageHandler.mpImage)
+        for i in range(len(self.imageHandler.detectedImage)):
+            self.imageHandler.detectedImage[i] = self.detector.detect(self.imageHandler.mpImage[i])
         
     # This needs to be called twice
-    def drawLandmarks(self) -> np.ndarray:
-        landmarksList = self.processedImage.pose_landmarks
+    def drawLandmarks(self, detectedImage, ndArrayImage) -> np.ndarray:
+        landmarksList = detectedImage.pose_landmarks
         
         print("Copying image...")
-        self.annotedImage = np.copy(self.imageHandler.ndArrayImage)
+        annotedImage = np.copy(ndArrayImage)
         
         print("Entering The LOOP...")
         # Iterating over all landmarks found by the detector
@@ -63,14 +62,14 @@ class PoseLandmarkHandler:
                 landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in poseLandmarks
             ])
             solutions.drawing_utils.draw_landmarks(
-                self.annotedImage,
+                annotedImage,
                 landmarksProto,
                 solutions.pose.POSE_CONNECTIONS,
                 solutions.drawing_styles.get_default_pose_landmarks_style())
         
         print("Drawing complete. Retuning annotated image.")
         # Not strictly necessary to return the image, but it might prove useful later
-        return self.annotedImage
+        return annotedImage
         
     def hasDetector(self) -> bool:
         if not self.detector:
@@ -79,13 +78,13 @@ class PoseLandmarkHandler:
             return True
         
     # This should probably go in the imageHandler
-    def saveImage(self):
-        print("Saving image...")
-        try:
-            cv2.imwrite("results/landmarked-image.png", self.annotedImage)
-        except:
-            logging.exception("Error while saving image: ")
-        print("Image saved to results as landmarked-image.png")
+    # def saveImage(self):
+    #     print("Saving image...")
+    #     try:
+    #         cv2.imwrite("results/landmarked-image.png", self.annotedImage)
+    #     except:
+    #         logging.exception("Error while saving image: ")
+    #     print("Image saved to results as landmarked-image.png")
         
     # Placeholder for future functionality
     def displayImage(self):
