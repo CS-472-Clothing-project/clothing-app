@@ -4,13 +4,12 @@ import cv2
 import logging
 
 class SegmentationHandler:
-    def __init__(self, imageHandler):
+    def __init__(self, imageHandler, debug=True):
         # self.segmentedImage = imageHandler.cvImage.copy()
         # Create the mutable image objects
         for i in range(len(imageHandler.segmentedImage)):
             imageHandler.segmentedImage[i] = imageHandler.cvImage[i].copy()
-        self.imageHandler = imageHandler
-        self.tightness = imageHandler.segTightness
+        self.debug = True
         
     # This needs to be called twice
     def segmentImage(self):

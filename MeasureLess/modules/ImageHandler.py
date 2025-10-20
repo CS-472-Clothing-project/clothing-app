@@ -3,12 +3,16 @@ import numpy
 import mediapipe as mp
 import logging
 import sys
+import logging
+import os
 
 class ImageHandler:
     # TODO: Update members to account for both images
     def __init__(self, segTightness=.5):
         # fileName and segTightness can likely be deleted and replaced
         # with local variables
+    def __init__(self, fileName, segTightness=.5, debug=True):
+        self.fileName = fileName
         self.segTightness = segTightness
         self.segmentedImage = [None] * 2
         self.annotatedImage = [None] * 2
@@ -60,3 +64,14 @@ class ImageHandler:
             except:
                 logging.exception(f"Error while saving image{counter}: ")
                 sys.exit()
+    
+    # For privacy concerns, check if the file exists
+    # If it does, delte it
+    def __del__(self):
+        if(self.debug == False):
+            # Using the os library, check if the image is present, if it is and debug is False
+            # Delete the image
+            if os.path.isfile(self.fileName):
+                os.remove(self.fileName)
+                print(f"File: {self.fileName} has been removed.")
+        return

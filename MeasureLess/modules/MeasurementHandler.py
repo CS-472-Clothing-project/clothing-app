@@ -5,6 +5,10 @@ import cv2
 import pandas
 
 class MeasurementHandler:
-    def __init__(self, imageHandler):
+    def __init__(self, imageHandler, debug=True):
         self.imageHandler = imageHandler
         self.measurementData = None
+        self.debug = debug
+    
+    def saveToCSV(self):
+        pass
