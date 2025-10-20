@@ -95,11 +95,13 @@ export default function Instructions() {
           <div className="flex items-start gap-3">
             <div className="text-2xl"><FaUserShield /></div>
             <p className="text-sm md:text-base">
-              Your measurements are computed on-device. We don’t send images or body data to the cloud.
-              Photos are processed locally and can be discarded after measurement.
+              Your photos are sent securely to our measurement server and processed automatically by our algorithms.
+              They aren’t reviewed by people,<strong> your images and body data never reach human eyes.</strong> We 
+              only use them to compute your measurements.
             </p>
           </div>
         </Section>
+
 
         <Section title="When You’re Ready">
           <ol className="list-decimal ml-6 space-y-2">
