@@ -19,13 +19,13 @@ class ImageHandler:
             # Current workflow requires the file to be read twice,
             # once for each framework. Should look into how to just
             # read once
-            self.cvImage = cv2.imread(fileName)
+            self.cvImage = cv2.imread(fileName) 
             # Change to only be read once, i.e. having opencv read in the image
             # and simply convert 
-            tmp_image = cvImage.copy()
+            self.tmp_image = self.cvImage.copy()
             # OpenCV reads in images as BGR instead of RGB, so convert it
-            tmp_image = cv2.cvtColar(tmp_image, cv2.COLOR_BGR2RGB)
-            self.mpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
+            self.tmp_image = cv2.cvtColor(self.tmp_image, cv2.COLOR_BGR2RGB)
+            self.mpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=self.tmp_image)
             # self.mpImage = mp.Image.create_from_file(fileName)
             self.ndArrayImage = self.mpImage.numpy_view()
             
