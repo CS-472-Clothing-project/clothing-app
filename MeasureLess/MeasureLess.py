@@ -47,17 +47,13 @@ def main():
                                                                            imageHandler.ndArrayImage[i])
     except:
         logging.exception("Error while drawing landmarks: ")
-        
-    # Saving landmarked image
-    # imageHandler.saveImage(imageHandler.annotatedImage[0], "front-result.png")
-    # imageHandler.saveImage(imageHandler.annotatedImage[1], "side-result.png")
-    imageHandler.saveResults()
 
-    
     # Creating segmentationHandler object, processing image, and saving the result
-    # segmentationHandler = SegmentationHandler.SegmentationHandler(imageHandler)
-    # segmentationHandler.segmentImage()
-    # segmentationHandler.saveImage()
+    segmentationHandler = SegmentationHandler.SegmentationHandler(imageHandler)
+    segmentationHandler.segmentImage()
+    
+    # Saving processed images
+    imageHandler.saveResults()
 
 if __name__ == "__main__":
     main()

@@ -40,11 +40,9 @@ class PoseLandmarkHandler:
         # Runs the detection method and returns the processed image
         for i in range(len(self.imageHandler.detectedImage)):
             self.imageHandler.detectedImage[i] = self.detector.detect(self.imageHandler.mpImage[i])
-        # self.processedImage = self.detector.detect(self.imageHandler.mpImage)
         
     # This needs to be called twice
     def drawLandmarks(self, detectedImage, ndArrayImage) -> np.ndarray:
-        # landmarksList = self.processedImage.pose_landmarks
         landmarksList = detectedImage.pose_landmarks
         
         print("Copying image...")
