@@ -4,11 +4,13 @@ import cv2
 import logging
 
 class SegmentationHandler:
-    def __init__(self, imageHandler):
+    def __init__(self, imageHandler, debug=True):
         self.segmentedImage = imageHandler.cvImage.copy()
         self.imageHandler = imageHandler
         self.tightness = imageHandler.segTightness
+        self.debug = True
         
+    # This needs to be called twice
     def segmentImage(self):
         # Using the mediapipe pose module to set options and process the image
         # provided with imageHandler
