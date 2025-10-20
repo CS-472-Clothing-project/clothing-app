@@ -9,6 +9,12 @@ import sys
 # TODO: Update logic to accept and process 2 images at once. One side profile, one front profile
 # TODO: For testing purposes, add the ability to use command-line arguments
 def main():
+    # Show usage
+    if(len(sys.argv) != 7):
+        print("Usage: python MeasureLess.py --fN <fileName> --dM <detectorMode> --sT <segTightness>")
+        sys.exit(0)
+
+    accepted_img_types = [".jpg", ".jpeg", ".png", ".bmp"]
     # Add support for command line arguments, will be useful for testing and further development
     argParser = argparse.ArgumentParser(description="To make testing easier, we implemented commandline arguments")
     argParser.add_argument("--fN", type=str, help="Image file name.")
@@ -21,9 +27,14 @@ def main():
     print("Welcome to MeasureLess, the measure-less app for tailoring.")
 
     # Check passed through arguments
-    print(args.fN)
-    print(args.dM)
-    print(args.sT)
+    # print(args.fN)
+    # print(args.dM)
+    # print(args.sT)
+
+    # TODO add error checking for file extentsions, for now only include .jpg, .png, and .bmp
+    if(os.path.splittext(args.fN)[1] in accepted_img_types) == False:
+        print(f"Unsupported file type: {args.fN}.")
+        sys.exit(0)
     
     # Creating the image object by calling the import handler
     fileName = args.fileName
