@@ -18,14 +18,19 @@ class ImageHandler:
         self.ndArrayImage = [None] * 2
         self.mpImage = [None] * 2
         self.loadSuccess = False
+        self.debug = debug
         
     # Load Image function
-    def loadImages(self):
+    def loadImages(self, fileNames):
+        # TODO Update this change this
         try:
-            fileName1 = input("Input first file name with extension: ")
-            print("Loading image ", fileName1, "...")
-            self.cvImage[0] = cv2.imread(fileName1)
-            self.mpImage[0] = mp.Image.create_from_file(fileName1)
+            # Should be unneeded for now
+            # fileName1 = input("Input first file name with extension: ")
+            # print("Loading image ", fileName1, "...")
+            self.cvImage[0] = cv2.imread(fileNames[0])
+            # self.mpImage[0] = mp.Image.create_from_file(fileName1)
+            tmp_image = self.cvImage[0].copy()
+            self.mpImage[0] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
             self.ndArrayImage[0] = self.mpImage[0].numpy_view()
             
             # Current workflow requires the file to be read twice,
@@ -38,13 +43,13 @@ class ImageHandler:
             # self.tmp_image = self.cvImage.copy()
             # OpenCV reads in images as BGR instead of RGB, so convert it
             # self.mpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=self.tmp_image)
-            # self.mpImage = mp.Image.create_from_file(fileName)
-            # self.ndArrayImage = self.mpImage.numpy_view()
             
         
-            fileName2 = input("Input second file name with extension: ")
-            self.cvImage[1] = cv2.imread(fileName2)
-            self.mpImage[1] = mp.Image.create_from_file(fileName2)
+            # fileName2 = input("Input second file name with extension: ")
+            self.cvImage[1] = cv2.imread(fileNames[1])
+            tmp_image = self.cvImage[1].copy()
+            self.mpImage[1] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
+            # self.mpImage[1] = mp.Image.create_from_file(fileName2)
             self.ndArrayImage[1] = self.mpImage[1].numpy_view()
             
         except:

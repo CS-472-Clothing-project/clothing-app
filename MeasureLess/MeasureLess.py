@@ -8,19 +8,13 @@ import os
 import sys
 
 # TODO: Update logic to accept and process 2 images at once. One side profile, one front profile
-# TODO: For testing purposes, add the ability to use command-line arguments
 def main(args):
 
     accepted_img_types = [".jpg", ".jpeg", ".png", ".bmp"]
+    fileNames = []
     
     # Short intro message for development
     print("Welcome to MeasureLess, the measure-less app for tailoring.")
-
-    # Check passed through arguments
-    # print(args.fImg)
-    # print(args.sImg)
-    # print(args.dM)
-    # print(args.sT)
 
     # TODO add error checking for file extentsions, for now only include .jpg, .png, and .bmp
     # if(os.path.splitext(args.fImg)[1] in accepted_img_types) == False:
@@ -33,9 +27,13 @@ def main(args):
 
 
     # Creating the image object by calling the import handler
-    fileName = args.fImg
+    # Make fileName a list and pass that into imageHandler. Might work well for opening the two images
+    fileNames.append(args.fImg)
+    fileNames.append(args.sImg)
+    print(fileNames)
     detectionMode = args.dM
     segmentationTightness = args.sT
+
     # print("segmentation type: ", type(segmentationTightness))
     # detectionMode = int(input("Select detector mode (1 = lite, 2 = full, 3 = heavy): "))
     # segmentationTightness = input("Provide segmentation tightness in [0,1] (default .5): ")
@@ -47,7 +45,7 @@ def main(args):
         imageHandler = ImageHandler.ImageHandler(float(segmentationTightness))
         
     
-    imageHandler.loadImages()
+    imageHandler.loadImages(fileNames)
         
     # Creating landmark handler object using provided data
     landmarkHandler = PoseLandmarkHandler.PoseLandmarkHandler(imageHandler, detectionMode)
