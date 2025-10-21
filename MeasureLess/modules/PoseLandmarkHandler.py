@@ -98,7 +98,17 @@ class PoseLandmarkHandler:
             logging.exception("Error while saving image: ")
         print("Image saved to results as landmarked-image.png")
         
+    def draw_height_line(self, a, b):
+        landmarks = self.processedImage.pose_landmarks[0] # currently working for one "pose" object at a time
 
+        h,w,_ = self.annotedImage.shape
+        x1 = int(landmarks[a].x * w)
+        x2 = int(landmarks[b].x * w)
+        y1 = int(landmarks[a].y * h)
+        y2 = int(landmarks[b].y * h)
+
+        cv2.line(self.annotedImage, (x1,y1), (x2,y2), (255,0,0), 5)
+        
     def getMeasurements(self, user_height = None):
         if not self.processedImage.pose_world_landmarks:
             print("No pose landmarks detected int this image.")
@@ -135,7 +145,7 @@ class PoseLandmarkHandler:
         avg_feet = avg_points(LEFT_HEEL, RIGHT_HEEL)
 
         body_height = dist_np(avg_ear, avg_feet)
-        
+
         scale = 1.0
         if user_height:
             scale = user_height / body_height
@@ -144,6 +154,8 @@ class PoseLandmarkHandler:
             "height_mm" : body_height * scale,
             "scale_factor" : scale ,
         }
+    
+
     
     # Placeholder for future functionality
     def displayImage(self):
