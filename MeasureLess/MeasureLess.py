@@ -1,27 +1,17 @@
 from modules import ImageHandler
 from modules import PoseLandmarkHandler
 from modules import SegmentationHandler
+from CLArgsHandler import measureLessArgs
 
 import logging
-import argparse
+import os
 import sys
 
 # TODO: Update logic to accept and process 2 images at once. One side profile, one front profile
 # TODO: For testing purposes, add the ability to use command-line arguments
-def main():
-    # Show usage
-    if(len(sys.argv) != 7):
-        print("Usage: python MeasureLess.py --fN <fileName> --dM <detectorMode> --sT <segTightness>")
-        sys.exit(0)
+def main(args):
 
     accepted_img_types = [".jpg", ".jpeg", ".png", ".bmp"]
-    # Add support for command line arguments, will be useful for testing and further development
-    argParser = argparse.ArgumentParser(description="To make testing easier, we implemented commandline arguments")
-    argParser.add_argument("--fN", type=str, help="Image file name.")
-    argParser.add_argument("--dM", type=int, help="Detector mode (1 = lite, 2 = full, 3 = heavy)")
-    argParser.add_argument("--sT", type=float, default=0.5, help="Segmentation tightness in [0, 1] (default .5)")
-
-    args = argParser.parse_args()
     
     # Short intro message for development
     print("Welcome to MeasureLess, the measure-less app for tailoring.")
@@ -32,14 +22,14 @@ def main():
     # print(args.sT)
 
     # TODO add error checking for file extentsions, for now only include .jpg, .png, and .bmp
-    if(os.path.splittext(args.fN)[1] in accepted_img_types) == False:
+    if(os.path.splitext(args.fN)[1] in accepted_img_types) == False:
         print(f"Unsupported file type: {args.fN}.")
         sys.exit(0)
     
     # Creating the image object by calling the import handler
-    fileName = args.fileName
-    detectionMode = args.detectionMode    
-    segmentationTightness = args.segmentationTightness
+    fileName = args.fN
+    detectionMode = args.dM
+    segmentationTightness = args.sT
     # print("segmentation type: ", type(segmentationTightness))
     
     # Checking if tightness was specified
@@ -82,4 +72,5 @@ def main():
     segmentationHandler.saveImage()
 
 if __name__ == "__main__":
-    main()
+    args = measureLessArgs.parse_args()
+    main(args)
