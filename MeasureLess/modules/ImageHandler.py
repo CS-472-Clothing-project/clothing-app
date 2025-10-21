@@ -24,7 +24,6 @@ class ImageHandler:
             # and simply convert 
             self.tmp_image = self.cvImage.copy()
             # OpenCV reads in images as BGR instead of RGB, so convert it
-            self.tmp_image = cv2.cvtColor(self.tmp_image, cv2.COLOR_BGR2RGB)
             self.mpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=self.tmp_image)
             # self.mpImage = mp.Image.create_from_file(fileName)
             self.ndArrayImage = self.mpImage.numpy_view()

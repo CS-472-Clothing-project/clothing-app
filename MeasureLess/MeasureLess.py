@@ -17,17 +17,23 @@ def main(args):
     print("Welcome to MeasureLess, the measure-less app for tailoring.")
 
     # Check passed through arguments
-    # print(args.fN)
+    # print(args.fImg)
+    # print(args.sImg)
     # print(args.dM)
     # print(args.sT)
 
     # TODO add error checking for file extentsions, for now only include .jpg, .png, and .bmp
-    if(os.path.splitext(args.fN)[1] in accepted_img_types) == False:
-        print(f"Unsupported file type: {args.fN}.")
-        sys.exit(0)
+    # if(os.path.splitext(args.fImg)[1] in accepted_img_types) == False:
+    #     print(f"Unsupported file type: {args.fImg}.")
+    #     sys.exit(0)
     
+    if not(os.path.splitext(args.fImg)[1] in accepted_img_types and os.path.splitext(args.sImg)[1] in accepted_img_types):
+        print(f"Unsupported file type detected. {args.fImg} or {args.sImg}.")
+        sys.exit(0)
+
+
     # Creating the image object by calling the import handler
-    fileName = args.fN
+    fileName = args.fImg
     detectionMode = args.dM
     segmentationTightness = args.sT
     # print("segmentation type: ", type(segmentationTightness))
