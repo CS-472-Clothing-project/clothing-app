@@ -28,6 +28,20 @@ class ImageHandler:
             self.mpImage[0] = mp.Image.create_from_file(fileName1)
             self.ndArrayImage[0] = self.mpImage[0].numpy_view()
             
+            # Current workflow requires the file to be read twice,
+            # once for each framework. Should look into how to just
+            # read once
+            # Will be commented out for now as the implementation has changed a bit
+            # self.cvImage = cv2.imread(fileName) 
+            # Change to only be read once, i.e. having opencv read in the image
+            # and simply convert 
+            # self.tmp_image = self.cvImage.copy()
+            # OpenCV reads in images as BGR instead of RGB, so convert it
+            # self.mpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=self.tmp_image)
+            # self.mpImage = mp.Image.create_from_file(fileName)
+            # self.ndArrayImage = self.mpImage.numpy_view()
+            
+        
             fileName2 = input("Input second file name with extension: ")
             self.cvImage[1] = cv2.imread(fileName2)
             self.mpImage[1] = mp.Image.create_from_file(fileName2)
@@ -63,7 +77,7 @@ class ImageHandler:
                 sys.exit()
     
     # For privacy concerns, check if the file exists
-    # If it does, delte it
+    # If it does, delete it
     def __del__(self):
         if(self.debug == False):
             # Using the os library, check if the image is present, if it is and debug is False

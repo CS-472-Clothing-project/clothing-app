@@ -1,17 +1,44 @@
 from modules import ImageHandler
 from modules import PoseLandmarkHandler
 from modules import SegmentationHandler
+from CLArgsHandler import measureLessArgs
 
 import logging
+import os
+import sys
 
 # TODO: Update logic to accept and process 2 images at once. One side profile, one front profile
-def main():
+# TODO: For testing purposes, add the ability to use command-line arguments
+def main(args):
+
+    accepted_img_types = [".jpg", ".jpeg", ".png", ".bmp"]
+    
     # Short intro message for development
     print("Welcome to MeasureLess, the measure-less app for tailoring.")
+
+    # Check passed through arguments
+    # print(args.fImg)
+    # print(args.sImg)
+    # print(args.dM)
+    # print(args.sT)
+
+    # TODO add error checking for file extentsions, for now only include .jpg, .png, and .bmp
+    # if(os.path.splitext(args.fImg)[1] in accepted_img_types) == False:
+    #     print(f"Unsupported file type: {args.fImg}.")
+    #     sys.exit(0)
     
+    if not(os.path.splitext(args.fImg)[1] in accepted_img_types and os.path.splitext(args.sImg)[1] in accepted_img_types):
+        print(f"Unsupported file type detected. {args.fImg} or {args.sImg}.")
+        sys.exit(0)
+
+
     # Creating the image object by calling the import handler
-    detectionMode = int(input("Select detector mode (1 = lite, 2 = full, 3 = heavy): "))
-    segmentationTightness = input("Provide segmentation tightness in [0,1] (default .5): ")
+    fileName = args.fImg
+    detectionMode = args.dM
+    segmentationTightness = args.sT
+    # print("segmentation type: ", type(segmentationTightness))
+    # detectionMode = int(input("Select detector mode (1 = lite, 2 = full, 3 = heavy): "))
+    # segmentationTightness = input("Provide segmentation tightness in [0,1] (default .5): ")
     
     # Checking if tightness was specified
     if not segmentationTightness:
@@ -56,4 +83,5 @@ def main():
     imageHandler.saveResults()
 
 if __name__ == "__main__":
-    main()
+    args = measureLessArgs.parse_args()
+    main(args)
