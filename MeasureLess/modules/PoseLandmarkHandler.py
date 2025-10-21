@@ -14,7 +14,15 @@ from mediapipe.tasks.python import vision
 NOSE = 0
 LEFT_ANKLE = 27
 RIGHT_ANKLE = 28
+LEFT_FOOT = 31
 RIGHT_FOOT = 32
+LEFT_EYE = 2
+RIGHT_EYE = 5
+LEFT_HEEL = 29
+RIGHT_HEEL = 30
+LEFT_EAR = 7
+RIGHT_EAR = 8
+
 
 class PoseLandmarkHandler:
     def __init__(self, imageHandler, landmarkerMode=2):
@@ -92,6 +100,10 @@ class PoseLandmarkHandler:
         
 
     def getMeasurements(self, user_height = None):
+        if not self.processedImage.pose_world_landmarks:
+            print("No pose landmarks detected int this image.")
+            return None
+        
         world_landmarks = self.processedImage.pose_world_landmarks[0] # currently working for one "pose" object at a time
 
         def dist(a,b):
@@ -105,7 +117,25 @@ class PoseLandmarkHandler:
             
             return distanceArr*1000
 
-        body_height = dist(NOSE, RIGHT_FOOT)
+        def dist_np(a, b):
+            return np.linalg.norm(a - b) * 1000
+        
+        def avg_points(a, b):
+            avgArr = np.array(
+                [
+                (world_landmarks[a].x + world_landmarks[b].x) / 2,
+                (world_landmarks[a].y + world_landmarks[b].y) / 2,
+                (world_landmarks[a].z + world_landmarks[b].z) / 2,
+            ]
+            )
+            return avgArr
+        
+        avg_ear = avg_points(LEFT_EAR, RIGHT_EAR)
+        avg_eye = avg_points(LEFT_EYE, RIGHT_EYE)
+        avg_feet = avg_points(LEFT_HEEL, RIGHT_HEEL)
+
+        body_height = dist_np(avg_ear, avg_feet)
+        
         scale = 1.0
         if user_height:
             scale = user_height / body_height
