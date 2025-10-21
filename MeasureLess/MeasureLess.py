@@ -37,12 +37,17 @@ def main(args):
     detectionMode = args.dM
     segmentationTightness = args.sT
     # print("segmentation type: ", type(segmentationTightness))
+    # detectionMode = int(input("Select detector mode (1 = lite, 2 = full, 3 = heavy): "))
+    # segmentationTightness = input("Provide segmentation tightness in [0,1] (default .5): ")
     
     # Checking if tightness was specified
     if not segmentationTightness:
-        imageHandler = ImageHandler.ImageHandler(fileName)
+        imageHandler = ImageHandler.ImageHandler()
     else:
-        imageHandler = ImageHandler.ImageHandler(fileName, float(segmentationTightness))
+        imageHandler = ImageHandler.ImageHandler(float(segmentationTightness))
+        
+    
+    imageHandler.loadImages()
         
     # Creating landmark handler object using provided data
     landmarkHandler = PoseLandmarkHandler.PoseLandmarkHandler(imageHandler, detectionMode)
@@ -62,20 +67,20 @@ def main(args):
         logging.exception("Error when detecting image: ")
         
     # Drawing landmarks onto image using landmarks generated above
-    print()
-    print("Landmarks processed. Drawing landmarks on image: ")
+    print("\nLandmarks processed. Drawing landmarks on image: ")
     try:
-        landmarkHandler.drawLandmarks()
+        for i in range(len(imageHandler.annotatedImage)):
+            imageHandler.annotatedImage[i] = landmarkHandler.drawLandmarks(imageHandler.detectedImage[i],
+                                                                           imageHandler.ndArrayImage[i])
     except:
         logging.exception("Error while drawing landmarks: ")
-        
-    # Saving landmarked image
-    landmarkHandler.saveImage()
-    
+
     # Creating segmentationHandler object, processing image, and saving the result
     segmentationHandler = SegmentationHandler.SegmentationHandler(imageHandler)
     segmentationHandler.segmentImage()
-    segmentationHandler.saveImage()
+    
+    # Saving processed images
+    imageHandler.saveResults()
 
 if __name__ == "__main__":
     args = measureLessArgs.parse_args()
