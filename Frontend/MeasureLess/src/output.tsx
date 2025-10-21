@@ -1,27 +1,16 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import SideMenu from "./components/SideMenu.tsx";
 
-/**
- * What the backend will eventually send us (values in inches).
- * We only show meaningful clothing measurements that are actually derivable from
- * the 33-point pose model and useful for tailoring:
- *  - shoulderWidth  (distance between L/R shoulders)
- *  - chest          (circumference estimate from upper torso width & depth)
- *  - waist          (circumference around natural waist)
- *  - hip            (circumference around hips)
- *  - sleeveLength   (shoulder -> wrist)
- *  - inseam         (crotch -> ankle)
- *  - outseam        (hip -> foot)
- */
 export type MeasurementPayload = Partial<{
-  shoulderWidth: number; // in
-  chest: number;         // in (circumference)
-  waist: number;         // in (circumference)
-  hip: number;           // in (circumference)
-  sleeveLength: number;  // in
-  inseam: number;        // in
-  outseam: number;       // in
-  height: number;        // in (from the earlier input screen if you pass it)
+  shoulderWidth: number;
+  chest: number;
+  waist: number;
+  hip: number;
+  sleeveLength: number;
+  inseam: number;
+  outseam: number;
+  height: number;
 }>;
 
 type Unit = "in" | "cm";
@@ -37,9 +26,7 @@ const LABELS: Record<keyof NonNullable<MeasurementPayload>, string> = {
   height: "Height",
 };
 
-function toCm(inches: number) {
-  return inches * 2.54;
-}
+function toCm(inches: number) { return inches * 2.54; }
 
 function formatValue(v: number | undefined, unit: Unit) {
   if (v == null) return "—";
@@ -53,11 +40,8 @@ function csvEscape(text: string) {
 }
 
 export default function Output() {
-  // Expecting data from the previous page via React Router state:
-  //   navigate("/output", { state: { measurements: {...} }})
   const location = useLocation() as { state?: { measurements?: MeasurementPayload } };
 
-  // Fallback demo data so the page still renders while backend is wiring up.
   const fallback: MeasurementPayload = {
     shoulderWidth: 18.0,
     chest: 40.0,
@@ -75,7 +59,6 @@ export default function Output() {
 
   const [unit, setUnit] = useState<Unit>("in");
 
-  // Table rows in a stable order
   const rows = useMemo(
     () =>
       ([
@@ -98,7 +81,6 @@ export default function Output() {
   function handleExportCSV() {
     const header = ["Measurement", unit === "in" ? "Value (in)" : "Value (cm)"];
     const lines = [header.join(",")];
-
     rows.forEach((r) => {
       const val =
         r.value == null
@@ -108,7 +90,6 @@ export default function Output() {
           : toCm(r.value).toFixed(1);
       lines.push([csvEscape(r.label), csvEscape(val)].join(","));
     });
-
     const csv = lines.join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -121,14 +102,9 @@ export default function Output() {
   }
 
   function handleSaveProfile() {
-    // Store locally per privacy requirement (no cloud). You can replace with real profile logic later.
     const key = "measureless.profiles";
     const existing = JSON.parse(localStorage.getItem(key) || "[]") as any[];
-    existing.push({
-      savedAt: new Date().toISOString(),
-      unit,
-      measurements,
-    });
+    existing.push({ savedAt: new Date().toISOString(), unit, measurements });
     localStorage.setItem(key, JSON.stringify(existing));
     alert("Saved to profile (local storage).");
   }
@@ -136,8 +112,10 @@ export default function Output() {
   return (
     <div className="min-h-screen w-full flex justify-center">
       <main className="w-full max-w-5xl px-4 md:px-8 py-6 md:py-10 space-y-6">
+        <SideMenu />
+
         <header className="flex items-center justify-between">
-          <div className="text-2xl">☰</div>
+          <h1 className="text-2xl md:text-3xl font-bold">Measurements</h1>
           <div className="flex items-center gap-2">
             <span className="mr-1 text-sm opacity-70">Units:</span>
             <div className="inline-flex rounded-full border overflow-hidden">
@@ -179,22 +157,13 @@ export default function Output() {
         </section>
 
         <div className="flex flex-col md:flex-row gap-3 md:gap-4 md:justify-center">
-          <button
-            onClick={handleSaveProfile}
-            className="px-6 py-2 rounded-full border hover:opacity-90"
-          >
+          <button onClick={handleSaveProfile} className="px-6 py-2 rounded-full border hover:opacity-90">
             Save to profile
           </button>
-          <button
-            onClick={handleExportCSV}
-            className="px-6 py-2 rounded-full border hover:opacity-90"
-          >
+          <button onClick={handleExportCSV} className="px-6 py-2 rounded-full border hover:opacity-90">
             Export to CSV
           </button>
-          <Link
-            to="/takePicture.tsx"
-            className="px-6 py-2 rounded-full border hover:opacity-90 text-center"
-          >
+          <Link to="/takePicture.tsx" className="px-6 py-2 rounded-full border hover:opacity-90 text-center">
             Retake Photos
           </Link>
         </div>
