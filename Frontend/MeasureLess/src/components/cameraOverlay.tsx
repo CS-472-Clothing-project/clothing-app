@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 const CameraOverlay: React.FC = () => {
     const videoRef = useRef<HTMLVideoElement | null>(null); // ref to video
-    const canvasRef = useRef(null); // ref to canvas to convert to img
+    const canvasRef = useRef<HTMLCanvasElement | null>(null); // ref to canvas to convert to img
     const [stream, setStream] = useState<MediaStream | null>(null); // MediaStream 
     const [cameraImage, setCameraImage] = useState<string | null>(null); // image
     const [facingMode, setFacingMode] = useState('user'); // front("user")/back("environment") camera state
@@ -46,22 +46,35 @@ const CameraOverlay: React.FC = () => {
             setStream(null); // clears stream
         }
     }
-    /*
+
     // take photo using camera and display it
     const capturePhoto = () => {
         // use video and canvas
-        
+        const video = videoRef.current
+        const canvas = canvasRef.current
         // set canvas to match video
-        
-        // draw video into canvas
-        
-        // convert canvas to JPEG
-        
-        // store as base64 URL
+        if (video && canvas) { // if both exist
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
 
-        // stop camera
+            const context = canvas.getContext('2d')
+            if (!context) // debug
+                console.log('Could not get canvas context');
+
+            // draw video into canvas
+            if (context)
+                context.drawImage(video, 0, 0);
+
+            // convert canvas to JPEG
+            const data = canvas.toDataURL("image/jpeg");
+
+            // store as base64 URL
+            setCameraImage(data)
+            // stop camera
+            stopCamera();
+        }
     }
-
+    /*
     const sendToBackend = () => {
         // comvert to blob
     }
@@ -84,6 +97,7 @@ const CameraOverlay: React.FC = () => {
     // display video camera
     return (
         <div className="relative w-full h-full">
+            <canvas ref={canvasRef} className="hidden" />
             {/*if theres no camera image..*/}
             {!cameraImage ? (
                 <>
@@ -96,7 +110,7 @@ const CameraOverlay: React.FC = () => {
                         className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none rounded-lg"
                     />
                     <button
-                        onClick={stopCamera}
+                        onClick={capturePhoto}
                         className="absolute transform -translate-x-1/2 bottom-8 left-1/2 w-16 h-16 rounded-full bg-gray-50
                         border-3 border-gray-300 hover:border-gray-400 z-10"
                     >
@@ -105,7 +119,10 @@ const CameraOverlay: React.FC = () => {
             ) : (
                 <>
                     {/* if you took the photo */}
-                    <img />
+                    <img src={cameraImage}
+                        alt="captured image"
+                        className="absolute top-0 left-0 w-full h-full object-cover"
+                    />
                 </>
             )}
         </div>
