@@ -8,8 +8,8 @@ import os
 
 class ImageHandler:
     # TODO: Update members to account for both images
-    def __init__(self, fileName, segTightness=.5, debug=True):
-        self.fileName = fileName
+    def __init__(self, fileNames, segTightness=.5, debug=True):
+        self.fileNames = fileNames
         self.segTightness = segTightness
         self.segmentedImage = [None] * 2
         self.annotatedImage = [None] * 2
@@ -32,18 +32,6 @@ class ImageHandler:
             tmp_image = self.cvImage[0].copy()
             self.mpImage[0] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
             self.ndArrayImage[0] = self.mpImage[0].numpy_view()
-            
-            # Current workflow requires the file to be read twice,
-            # once for each framework. Should look into how to just
-            # read once
-            # Will be commented out for now as the implementation has changed a bit
-            # self.cvImage = cv2.imread(fileName) 
-            # Change to only be read once, i.e. having opencv read in the image
-            # and simply convert 
-            # self.tmp_image = self.cvImage.copy()
-            # OpenCV reads in images as BGR instead of RGB, so convert it
-            # self.mpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=self.tmp_image)
-            
         
             # fileName2 = input("Input second file name with extension: ")
             self.cvImage[1] = cv2.imread(fileNames[1])
@@ -87,7 +75,9 @@ class ImageHandler:
         if(self.debug == False):
             # Using the os library, check if the image is present, if it is and debug is False
             # Delete the image
-            if os.path.isfile(self.fileName):
-                os.remove(self.fileName)
-                print(f"File: {self.fileName} has been removed.")
+	        # Will have to be adjusted or even removed if we figure out to receive images directly from the front end
+            for i in range(len(self.fileNames)):
+                if os.path.isfile(self.fileNames[i]):
+                    os.remove(self.fileNames[i])
+                    print(f"File: {self.fileNames[i]} has been removed.")
         return

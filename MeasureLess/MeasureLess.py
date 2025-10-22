@@ -40,9 +40,9 @@ def main(args):
     
     # Checking if tightness was specified
     if not segmentationTightness:
-        imageHandler = ImageHandler.ImageHandler()
+        imageHandler = ImageHandler.ImageHandler(fileNames)
     else:
-        imageHandler = ImageHandler.ImageHandler(float(segmentationTightness))
+        imageHandler = ImageHandler.ImageHandler(fileNames, float(segmentationTightness))
         
     
     imageHandler.loadImages(fileNames)
