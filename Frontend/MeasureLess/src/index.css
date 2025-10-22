@@ -1,3 +1,8 @@
+/* index.css
+   Tailwind + design tokens. Change variables here to theme the whole app.
+   We keep light/dark palettes in CSS variables and let Tailwind read them.
+*/
+
 @import "tailwindcss";
 @import "tw-animate-css";
 

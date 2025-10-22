@@ -1,6 +1,12 @@
+// output.tsx
+// Measurement results screen.
+// - Displays values with In/Cm toggle
+// - "Save to profile" stores a snapshot in localStorage (prototype only)
+// - "Export to CSV" downloads a simple CSV of the current table
+
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import SideMenu from "./components/SideMenu.tsx";
+import SideMenu from "./components/SideMenu";
 
 export type MeasurementPayload = Partial<{
   shoulderWidth: number;
@@ -26,8 +32,10 @@ const LABELS: Record<keyof NonNullable<MeasurementPayload>, string> = {
   height: "Height",
 };
 
+// Convert inches → centimeters for display
 function toCm(inches: number) { return inches * 2.54; }
 
+// Format a numeric value according to unit
 function formatValue(v: number | undefined, unit: Unit) {
   if (v == null) return "—";
   const n = unit === "in" ? v : toCm(v);
@@ -35,13 +43,16 @@ function formatValue(v: number | undefined, unit: Unit) {
   return `${n.toFixed(digits)} ${unit}`;
 }
 
+// Escape CSV fields if they contain commas/quotes/newlines
 function csvEscape(text: string) {
   return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
 export default function Output() {
+  // If the camera page navigated here with data, it will be in location.state
   const location = useLocation() as { state?: { measurements?: MeasurementPayload } };
 
+  // Fallback values so this screen isn't empty
   const fallback: MeasurementPayload = {
     shoulderWidth: 18.0,
     chest: 40.0,
@@ -52,6 +63,7 @@ export default function Output() {
     outseam: 40.0,
   };
 
+  // Merge any incoming values over the fallback
   const measurements: MeasurementPayload = useMemo(
     () => ({ ...fallback, ...(location.state?.measurements ?? {}) }),
     [location.state]
@@ -59,6 +71,7 @@ export default function Output() {
 
   const [unit, setUnit] = useState<Unit>("in");
 
+  // Build table rows in display order
   const rows = useMemo(
     () =>
       ([
@@ -78,6 +91,7 @@ export default function Output() {
     [measurements]
   );
 
+  // Download CSV of the table
   function handleExportCSV() {
     const header = ["Measurement", unit === "in" ? "Value (in)" : "Value (cm)"];
     const lines = [header.join(",")];
@@ -101,6 +115,7 @@ export default function Output() {
     URL.revokeObjectURL(url);
   }
 
+  // Save into localStorage (prototype-only “profile”)
   function handleSaveProfile() {
     const key = "measureless.profiles";
     const existing = JSON.parse(localStorage.getItem(key) || "[]") as any[];
@@ -114,6 +129,7 @@ export default function Output() {
       <main className="w-full max-w-5xl px-4 md:px-8 py-6 md:py-10 space-y-6">
         <SideMenu />
 
+        {/* Heading + Unit Toggle */}
         <header className="flex items-center justify-between">
           <h1 className="text-2xl md:text-3xl font-bold">Measurements</h1>
           <div className="flex items-center gap-2">
@@ -135,6 +151,7 @@ export default function Output() {
           </div>
         </header>
 
+        {/* Results table */}
         <section className="w-full border rounded-2xl p-4 md:p-6">
           <div className="overflow-x-auto">
             <table className="w-full text-sm md:text-base">
@@ -156,6 +173,7 @@ export default function Output() {
           </div>
         </section>
 
+        {/* Page actions */}
         <div className="flex flex-col md:flex-row gap-3 md:gap-4 md:justify-center">
           <button onClick={handleSaveProfile} className="px-6 py-2 rounded-full border hover:opacity-90">
             Save to profile

@@ -1,3 +1,7 @@
+// takePicture.tsx
+// Hosts the CameraOverlay component inside a 9:16 frame to mimic a phone.
+// We keep this page slim so the overlay can focus on camera logic.
+
 import CameraOverlay from './components/cameraOverlay'
 import React from "react";
 import SideMenu from "./components/SideMenu.tsx";
