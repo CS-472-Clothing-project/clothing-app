@@ -27,36 +27,54 @@ class SegmentationHandler:
         backgroundImage[:] = [4, 244, 4]
         self.segmentedImage = np.where(condition, self.segmentedImage, backgroundImage)
         
-    def find_head_measurement(self, middle_px, nose_px):
+    def getMeasurementScale(self, middle_px, nose_px, user_hieght = 1828.8):
         """
-            Function to try and find an actual hieght pixel from Nose pixel,
-            loops starting from nose pixel until it hits background. Found 
-            pixel is printed to segmented-image.png
+            Function to get the scale of mm / px by finding the users pixel hieght
+            and comparing it to the users actual hieght.
+        """
 
-            TODO:
-                Issue with for loop breaking too early
-                Creating hieght line once top pixel is found
-        """
-        # cv2.circle(self.segmentedImage, middle_px, 3, (255,0,255), thickness=-1)
-        # cv2.circle(self.segmentedImage, nose_px, 3, (255,0,255), thickness=-1)
         print(f"Segemented Imaged Shape:  {self.segmentedImage.shape}")
         print(f"Nose pixel = {nose_px}")
         x,y = nose_px
-        # test_pixel = (x,y-55)
-        # print(f"test pixel = {test_pixel}")
-        # print(f"test pixel color value = {self.segmentedImage[test_pixel]}")
-        # cv2.circle(self.segmentedImage, test_pixel, 3, (255,0,255,), thickness=-1)
+
+
+        def check_if_background(x, y):
+            if (np.array_equal(self.segmentedImage[(y-1, x)], np.array([4, 244, 4]))): # Check up
+                if (np.array_equal(self.segmentedImage[(y-2, x)], np.array([4, 244, 4]))): # Check up + 1
+                    return True
+            # if (np.array_equal(self.segmentedImage[(y,x)], np.array([4, 244, 4]))): # Check pixel
+            #     return True
+            #     if (np.array_equal(self.segmentedImage[(y , x + 1)], np.array([4, 244, 4]))): # Check right
+            #         if ( np.array_equal(self.segmentedImage[(y,  x-1)], np.array([4, 244, 4]))): # Check left
+            #             if (np.array_equal(self.segmentedImage[(y-1, x)], np.array([4, 244, 4]))): # Check up
+            #                 if (np.array_equal(self.segmentedImage[(y+1, x)], np.array([4, 244, 4]))): # Check down
+            #                     return True
+            return False
 
         # Loops from nose, until it hits green background, currently breaking too early
-        for y_pixel in range(y, 0, -5):
-            temp_pixel = (x,y_pixel)
-            print(f"Temp pixel = {temp_pixel} with color {self.segmentedImage[temp_pixel]}")
-            if np.array_equal(self.segmentedImage[temp_pixel], np.array([4, 244, 4])):
+        green_count = 0
+        for y_pixel in range(y, 0, -1):
+            top_pixel = (x, y_pixel)
+            # print(f"Temp pixel = {top_pixel} with color {self.segmentedImage[y_pixel, x]}")
+            if check_if_background(x = top_pixel[0], y= top_pixel[1]):
                 break
-            
-        print(temp_pixel)
+                
+        # visualizing findings
+        cv2.circle(self.segmentedImage, top_pixel, 1, (0, 255, 255), thickness=-1)
+        cv2.line(self.segmentedImage, middle_px, top_pixel, (50,255,255), 2)
 
-        cv2.circle(self.segmentedImage, temp_pixel, 1, (255,0,0), thickness=-1)
+        # getting scale factor 
+        pixel_height = np.linalg.norm(np.array(middle_px) - np.array(top_pixel))
+        x,y = middle_px
+        temp_px = (x,y - int(pixel_height))
+        cv2.circle(self.segmentedImage, temp_px, 1, (0, 255, 255), thickness=-1)
+        # print(pixel_height)
+
+        scale = user_hieght/pixel_height # manually inputed user height to get scale
+        print (scale)
+
+        return scale 
+    
     def saveImage(self):
         print("Saving image...")
         try:

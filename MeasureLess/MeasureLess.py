@@ -58,7 +58,7 @@ def main():
     # Creating segmentationHandler object, processing image, and saving the result
     segmentationHandler = SegmentationHandler.SegmentationHandler(imageHandler)
     segmentationHandler.segmentImage()
-    segmentationHandler.find_head_measurement(middle_pixel, nose_pixel) # Use points calculated to try and find a better top measurement
+    mm_per_px = segmentationHandler.getMeasurementScale(middle_pixel, nose_pixel) # Use points calculated to try and find a better top measurement
     segmentationHandler.saveImage()
 
 if __name__ == "__main__":
