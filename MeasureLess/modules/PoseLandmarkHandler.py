@@ -98,64 +98,54 @@ class PoseLandmarkHandler:
             logging.exception("Error while saving image: ")
         print("Image saved to results as landmarked-image.png")
         
-    def draw_height_line(self, a, b):
-        landmarks = self.processedImage.pose_landmarks[0] # currently working for one "pose" object at a time
+    # def draw_height_line(self, a, b):
+    #     landmarks = self.processedImage.pose_landmarks[0] # currently working for one "pose" object at a time
 
-        h,w,_ = self.annotedImage.shape
-        x1 = int(landmarks[a].x * w)
-        x2 = int(landmarks[b].x * w)
-        y1 = int(landmarks[a].y * h)
-        y2 = int(landmarks[b].y * h)
+    #     h,w,_ = self.annotedImage.shape
+    #     x1 = int(landmarks[a].x * w)
+    #     x2 = int(landmarks[b].x * w)
+    #     y1 = int(landmarks[a].y * h)
+    #     y2 = int(landmarks[b].y * h)
 
-        cv2.line(self.annotedImage, (x1,y1), (x2,y2), (255,0,0), 5)
+    #     cv2.line(self.annotedImage, (x1,y1), (x2,y2), (255,0,0), 5)
         
     def getMeasurements(self, user_height = None):
+        """
+            Catch all function currently used to calculated and return pixels needed for 
+            measurement calculation. Probably needs to be moved in later iterations but 
+            for now is just used to get values from PoseLandmarkHandler.py to 
+            SegmentationHandler.py throught Measureless.PY
+        """
+        
         if not self.processedImage.pose_world_landmarks:
             print("No pose landmarks detected int this image.")
             return None
         
-        world_landmarks = self.processedImage.pose_world_landmarks[0] # currently working for one "pose" object at a time
-
-        def dist(a,b):
-            distanceArr =  np.linalg.norm(np.array(
-                [
-                world_landmarks[a].x - world_landmarks[b].x,
-                world_landmarks[a].y - world_landmarks[b].y,
-                world_landmarks[a].z - world_landmarks[b].z,
-                ]
-             ))
-            
-            return distanceArr*1000
-
-        def dist_np(a, b):
-            return np.linalg.norm(a - b) * 1000
+        landmarks = self.processedImage.pose_landmarks[0] # currently working for one "pose" object at a time
+        h,w,_ = self.annotedImage.shape
         
-        def avg_points(a, b):
-            avgArr = np.array(
-                [
-                (world_landmarks[a].x + world_landmarks[b].x) / 2,
-                (world_landmarks[a].y + world_landmarks[b].y) / 2,
-                (world_landmarks[a].z + world_landmarks[b].z) / 2,
-            ]
-            )
-            return avgArr
+        #  Helper function to convert our coord into values cv2 can use
+        def getPixel(index):
+            x_coor = int(landmarks[index].x * w)
+            y_coor = int(landmarks[index].y * h)
+            return(x_coor,y_coor)
         
-        avg_ear = avg_points(LEFT_EAR, RIGHT_EAR)
-        avg_eye = avg_points(LEFT_EYE, RIGHT_EYE)
-        avg_feet = avg_points(LEFT_HEEL, RIGHT_HEEL)
+        # get both feet for an average middle pixel that can be used for hieght
+        left_pixel = getPixel(LEFT_FOOT)
+        right_pixel = getPixel(RIGHT_FOOT)
+        middle_pixel = (int((left_pixel[0] + right_pixel[0]) / 2), int((right_pixel[1] + left_pixel[1]) / 2))
 
-        body_height = dist_np(avg_ear, avg_feet)
+        # draw middle "base" pixel
+        cv2.circle(self.annotedImage, middle_pixel, 3, color = (0, 255, 0), thickness=-1)
 
-        scale = 1.0
-        if user_height:
-            scale = user_height / body_height
+        # draw hieghest pixel we have for "top" pixel
+        nose_pixel = getPixel(NOSE)
+        cv2.line(self.annotedImage, nose_pixel, middle_pixel, (255,0,0), 5)
+
+        # print("Mid-point printed\n")
+
         
-        return {
-            "height_mm" : body_height * scale,
-            "scale_factor" : scale ,
-        }
-    
-
+        return middle_pixel, nose_pixel
     
     # Placeholder for future functionality
     def displayImage(self):

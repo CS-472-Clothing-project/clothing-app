@@ -13,7 +13,7 @@ def main():
     # fileName = input("Input name of the image file (with extension): ")
     # detectionMode = int(input("Select detector mode (1 = lite, 2 = full, 3 = heavy): "))
     # segmentationTightness = input("Provide segmentation tightness in [0,1] (default .5): ")
-    fileName = "test.jpg"
+    fileName = "582_6h_76w_male_33a.jpg"
     detectionMode = 3
     segmentationTightness = .5
     # print("segmentation type: ", type(segmentationTightness))
@@ -38,8 +38,6 @@ def main():
     print("Detector loaded. Running image detection...")
     try:
         landmarkHandler.detectImage()
-        measurements = landmarkHandler.getMeasurements()
-        print(f"Estimated height = {measurements['height_mm'] / 1000}")
 
     except:
         logging.exception("Error when detecting image: ")
@@ -51,13 +49,16 @@ def main():
         landmarkHandler.drawLandmarks()
     except:
         logging.exception("Error while drawing landmarks: ")
-        
+    
+    middle_pixel, nose_pixel = landmarkHandler.getMeasurements() # Get points needed for measurement calculations
+
     # Saving landmarked image
     landmarkHandler.saveImage()
     
     # Creating segmentationHandler object, processing image, and saving the result
     segmentationHandler = SegmentationHandler.SegmentationHandler(imageHandler)
     segmentationHandler.segmentImage()
+    segmentationHandler.find_head_measurement(middle_pixel, nose_pixel) # Use points calculated to try and find a better top measurement
     segmentationHandler.saveImage()
 
 if __name__ == "__main__":
