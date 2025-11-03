@@ -1,7 +1,7 @@
 from modules import ImageHandler
 from modules import PoseLandmarkHandler
 from modules import SegmentationHandler
-from CLArgsHandler import measureLessArgs
+from modules.CLArgsHandler import measureLessArgs
 
 import logging
 import os
