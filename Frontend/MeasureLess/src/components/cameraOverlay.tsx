@@ -1,10 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const CameraOverlay: React.FC = () => {
+export default function CameraOverlay() {
     const videoRef = useRef<HTMLVideoElement | null>(null); // ref to video
     const canvasRef = useRef<HTMLCanvasElement | null>(null); // ref to canvas to convert to img
     const [stream, setStream] = useState<MediaStream | null>(null); // MediaStream 
-    const [cameraImage, setCameraImage] = useState<string | null>(null); // image
+
+    const [frontBlob, setFrontBlob] = useState<Blob | null>(null); // front blob for sending
+    const [frontUrl, setFrontUrl] = useState<string | null>(null); // front url for displaying
+
+    const [sideBlob, setSideBlob] = useState<Blob | null>(null) // side blob for sending
+    const [sideUrl, setSideUrl] = useState<string | null>(null) // side url for displaying
+
     const [facingMode, setFacingMode] = useState('user'); // front("user")/back("environment") camera state
 
     // for intial camera and when face change
@@ -48,7 +55,7 @@ const CameraOverlay: React.FC = () => {
     }
 
     // take photo using camera and display it
-    const capturePhoto = () => {
+    const capturePhoto = ({ photoType }: { photoType: string }) => {
         // use video and canvas
         const video = videoRef.current
         const canvas = canvasRef.current
@@ -58,40 +65,76 @@ const CameraOverlay: React.FC = () => {
             canvas.height = video.videoHeight;
 
             const context = canvas.getContext('2d')
-            if (!context) // debug
+            if (!context) { // debug
                 console.log('Could not get canvas context');
-
-            // draw video into canvas
-            if (context)
+                return;
+            } else {
                 context.drawImage(video, 0, 0);
+            }
 
-            // convert canvas to JPEG
-            const data = canvas.toDataURL("image/jpeg");
+            // draw video into blob
+            canvas.toBlob((blob) => {
+                if (!blob) return;
 
-            // store as base64 URL
-            setCameraImage(data)
-            // stop camera
-            stopCamera();
+                // Create URL for preview
+                const url = URL.createObjectURL(blob);
+
+                if (photoType === 'front') {
+                    setFrontBlob(blob);
+                    setFrontUrl(url);
+                } else if (photoType === 'side') {
+                    setSideBlob(blob);
+                    setSideUrl(url);
+                }
+            }, "image/jpeg", 0.95); // 0.95 = 95% quality
+        }
+    }
+
+
+    const sendToBackend = async () => {
+        let navigate = useNavigate();
+        try {
+            if (!frontBlob || !sideBlob) {
+                console.error("Need both images");
+                return;
+            }
+            // create formData -> append information
+            const formData = new FormData();
+            formData.append("height", "160");
+            formData.append("bodyType", "male");
+            // append blob
+            formData.append("frontImage", frontBlob, "front.jpg")
+            formData.append("sideImage", sideBlob, "side.jpg")
+            // post request
+            const response = await fetch("http://localhost:5000/api/measure", { //figure out port
+                method: "POST",
+                body: formData,
+            });
+            const data = await response.json();
+            console.log("Measurements received:", data);
+
+            // go to output 
+            navigate('/output', {
+                state: { measurements: data }
+            });
+        } catch (err) {
+            console.error("Error POST request with images and info", err);
         }
     }
     /*
-    const sendToBackend = () => {
-        // comvert to blob
-    }
-
     retake photo with a button
     const retakePhoto = () => {
        // clear capturedImage state
-
+    
         // recall startCamera
         startCamera();
     }
-
+    
     // switch back <-> front camera with button
     const switchCamera = () => {
         //update facingMode state
-
-
+    
+    
     }
     */
     // display video camera
@@ -99,7 +142,7 @@ const CameraOverlay: React.FC = () => {
         <div className="relative w-full h-full">
             <canvas ref={canvasRef} className="hidden" />
             {/*if theres no camera image..*/}
-            {!cameraImage ? (
+            {!frontUrl ? (
                 <>
                     {/* do video feed */}
                     <video
@@ -110,7 +153,7 @@ const CameraOverlay: React.FC = () => {
                         className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none rounded-lg"
                     />
                     <button
-                        onClick={capturePhoto}
+                        onClick={() => capturePhoto({ photoType: 'front' })}
                         className="absolute transform -translate-x-1/2 bottom-8 left-1/2 w-16 h-16 rounded-full bg-gray-50
                         border-3 border-gray-300 hover:border-gray-400 z-10"
                     >
@@ -119,7 +162,7 @@ const CameraOverlay: React.FC = () => {
             ) : (
                 <>
                     {/* if you took the photo */}
-                    <img src={cameraImage}
+                    <img src={frontUrl}
                         alt="captured image"
                         className="absolute top-0 left-0 w-full h-full object-cover"
                     />
@@ -128,4 +171,4 @@ const CameraOverlay: React.FC = () => {
         </div>
     )
 }
-export default CameraOverlay
+
