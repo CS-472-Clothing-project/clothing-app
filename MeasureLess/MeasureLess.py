@@ -1,6 +1,7 @@
 from modules import ImageHandler
 from modules import PoseLandmarkHandler
 from modules import SegmentationHandler
+from modules import MeasurementHandler
 from modules.CLArgsHandler import measureLessArgs
 
 import logging
@@ -76,7 +77,11 @@ def main(args):
     # Creating segmentationHandler object, processing image, and saving the result
     segmentationHandler = SegmentationHandler.SegmentationHandler(imageHandler)
     segmentationHandler.segmentImage()
-    
+
+    # Measurements from calculated images
+    measurementHandler = MeasurementHandler.MeasurementHandler(imageHandler, user_height=74.0157)
+    measurementHandler.getMeasurementScale()
+
     # Saving processed images
     imageHandler.saveResults()
 
