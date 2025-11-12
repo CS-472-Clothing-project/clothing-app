@@ -21,10 +21,10 @@ LEFT_HIP = 23
 # TODO Get measurements from the scale calculated
 # TODO Use both images , currently just uses front view
 class MeasurementHandler:
-    def __init__(self, imageHandler, user_height=72, debug=True):
+    def __init__(self, imageHandler, user_height=188, debug=True):
         self.imageHandler = imageHandler
         self.measurementData = None
-        self.user_height = user_height
+        self.user_height = user_height # currently in cm for testing
         self.debug = debug
         self.landmarks = self.imageHandler.detectedImage[0].pose_landmarks[0]
         self.image_h,self.image_w,_ = self.imageHandler.annotatedImage[0].shape
@@ -87,8 +87,8 @@ class MeasurementHandler:
                 break
 
         # Show the pixel found and draw a height line on the segemented image
-        cv2.circle(segmentedImage, temp_px, 3, color=(0, 0, 0), thickness=-1)
-        cv2.line(segmentedImage, mid_px, temp_px, (255,0,0), 2) 
+        # cv2.circle(segmentedImage, temp_px, 3, color=(0, 0, 0), thickness=-1)
+        # cv2.line(segmentedImage, mid_px, temp_px, (255,0,0), 2) 
         # print(f"Top Pixel found = {temp_px} with color {segmentedImage[(temp_px)]}")
 
         pixel_height = abs(mid_px[1] - temp_px[1])
@@ -96,3 +96,15 @@ class MeasurementHandler:
 
         self.scale = self.user_height/pixel_height
         # print(self.scale)
+
+def getMeasurements(self):
+        right_hip = self.getPixel(RIGHT_HIP)
+        left_hip = self.getPixel(LEFT_HIP)
+        segmentedImage = self.imageHandler.segmentedImage[0]
+        cv2.line(segmentedImage, right_hip, left_hip, (255,0,0), 2) 
+
+        pixel_dist = np.linalg.norm(np.array(right_hip) - np.array(left_hip))
+
+        hip_width = pixel_dist * self.scale
+        print(f"Hip width (px): {pixel_dist:.2f}")
+        print(f"Hip width (cm): {hip_width:.2f}")
