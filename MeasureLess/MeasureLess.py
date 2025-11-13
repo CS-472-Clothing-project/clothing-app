@@ -79,8 +79,8 @@ def main(args):
     segmentationHandler.segmentImage()
 
     # Measurements from calculated images
-    measurementHandler = MeasurementHandler.MeasurementHandler(imageHandler, user_height=185)
-    measurementHandler.getMeasurementScale()
+    measurementHandler = MeasurementHandler.MeasurementHandler(imageHandler, user_height=177.80)
+    measurementHandler.getMeasurements()
 
     # Saving processed images
     imageHandler.saveResults()
