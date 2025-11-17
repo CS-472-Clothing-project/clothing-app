@@ -12,6 +12,7 @@ class ImageHandler:
         # Filenames contains name in index 0 and extension in index 1
         self.fileData = fileNames
         self.imageCount = imageCount
+        self.backgroundColor = [4, 244, 4]
         self.segTightness = segTightness
         self.segmentedImage = [None] * imageCount
         self.annotatedImage = [None] * imageCount
