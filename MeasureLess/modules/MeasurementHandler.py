@@ -100,7 +100,7 @@ class MeasurementHandler:
             (bool) : True if background found, False if not
         """
         (x,y) = pixel
-        bg_color = [4, 244, 4]
+        bg_color = self.imageHandler.backgroundColor.copy()
 
         if direction == 'up':       
             if (np.all(segmented_image[y-1,x] == bg_color)): # check 1 up

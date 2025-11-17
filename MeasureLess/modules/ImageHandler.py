@@ -11,6 +11,7 @@ class ImageHandler:
     def __init__(self, fileNames, segTightness=.5, debug=True):
         self.fileNames = fileNames
         self.segTightness = segTightness
+        self.backgroundColor = [4, 244, 4]
         self.segmentedImage = [None] * 2
         self.annotatedImage = [None] * 2
         self.detectedImage = [None] * 2

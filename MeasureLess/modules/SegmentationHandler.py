@@ -37,5 +37,5 @@ class SegmentationHandler:
             backgroundImage = np.zeros(image[i].shape, dtype=np.uint8)
         
             # For every pixel in backgroundImage, change the color to greenscreen
-            backgroundImage[:] = [4, 244, 4]
+            backgroundImage[:] = self.imageHandler.backgroundColor.copy()
             self.imageHandler.segmentedImage[i] = np.where(condition[i], self.imageHandler.segmentedImage[i], backgroundImage)
