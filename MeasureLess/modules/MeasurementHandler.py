@@ -61,9 +61,11 @@ class MeasurementHandler:
         print("Measurement Handler Stuff ...")
     
 
-    def saveToCSV(self, hip):
+    def saveToCSV(self, hip, shoulder):
+        print(f"Saving measurements to results/results.csv")
         df = pd.DataFrame([{
             "Hip Size":hip,
+            "Shoulder Size":shoulder,
         }])
         df.to_csv("results/result.csv", mode="w", header=True, index=False)
     
@@ -115,6 +117,33 @@ class MeasurementHandler:
                     return True
             return False
         
+    def getPointFromBackground(self, point, segmented_image, direction):
+        x,y = point
+
+        if direction == "right":
+            for x_pixel in range(x, segmented_image.shape[1], 1):
+                temp = (x_pixel, y)
+                if self.checkBackground(temp, segmented_image, direction):
+                    return temp
+
+        elif direction == "left":
+            for x_pixel in range(x, 0, -1):
+                temp = (x_pixel, y)
+                if self.checkBackground(temp, segmented_image, direction):
+                    return temp
+
+        elif direction == "up":
+            for y_pixel in range(y, 0, -1):
+                temp = (x, y_pixel)
+                if self.checkBackground(temp, segmented_image, direction):
+                    return temp
+
+        elif direction == "down":
+            for y_pixel in range(y, segmented_image.shape[0], 1):
+                temp = (x, y_pixel)
+                if self.checkBackground(temp, segmented_image, direction):
+                    return temp
+
 
     # Find the middle pixel between both feet for a better height measurement
     def getMiddlePx(self):
@@ -144,13 +173,7 @@ class MeasurementHandler:
         mid_px = self.getMiddlePx()
         nose_px = self.getPixel(NOSE, self.front_landmarks, self.front_h, self.front_w)
 
-        # Start from nose and keep moving up till we hit background, then we know we are at top of head
-        x,y = nose_px
-        for y_pixel in range(y, 0, -1):
-            temp_px = (x, y_pixel)
-            if self.checkBackground(temp_px, segmented_image= self.front_segmented_image, direction='up'):
-                break
-
+        temp_px = self.getPointFromBackground(nose_px, self.front_segmented_image, direction='up')
         # Show the pixel found and draw a height line on the segemented image
         # cv2.circle(segmented_image, temp_px, 3, color=(0, 0, 0), thickness=-1)
         # cv2.line(segmented_image, mid_px, temp_px, (255,0,0), 2) 
@@ -176,24 +199,8 @@ class MeasurementHandler:
         front_right_hip = self.getPixel(RIGHT_HIP, self.front_landmarks, self.front_h, self.front_w)
         front_left_hip = self.getPixel(LEFT_HIP, self.front_landmarks, self.front_h, self.front_w)
 
-        # Logic to find background and get more accurate pixels
-        x,y = front_right_hip
-        for x_pixel in range(x,self.front_w, 1):
-            temp_px = (x_pixel,y)
-            if self.checkBackground(temp_px, segmented_image=self.front_segmented_image, direction="right"):
-                break
-            
-        front_right_hip_px = temp_px
-        # print(f"New hip pixel printed {temp_px}")
-        # cv2.circle(self.front_segmented_image, temp_px, 15, color=(255,0,50), thickness=-1)
-
-        x,y = front_left_hip
-        for x_pixel in range(x, 0, -1):
-            temp_px = (x_pixel,y)
-            if self.checkBackground(temp_px, segmented_image=self.front_segmented_image, direction="left"):
-                break
-        front_left_hip_px = temp_px
-        # cv2.circle(self.front_segmented_image, temp_px, 15, color=(255,0,50), thickness=-1)
+        front_right_hip_px = self.getPointFromBackground(front_right_hip, self.front_segmented_image, direction="right")
+        front_left_hip_px = self.getPointFromBackground(front_left_hip, self.front_segmented_image, direction="left")
 
         # Calculate pixel distance between both front points
         front_view_hip_dist = np.linalg.norm(np.array(front_right_hip_px) - np.array(front_left_hip_px)) # Front view pixel distance
@@ -203,22 +210,10 @@ class MeasurementHandler:
         side_right_hip = self.getPixel(RIGHT_HIP, self.side_landmarks, self.side_h, self.side_w)
         side_left_hip = self.getPixel(LEFT_HIP, self.side_landmarks, self.side_h, self.side_w)
 
-        x,y = side_right_hip
-        for x_pixel in range(x,self.side_w,1):
-            temp_px = (x_pixel,y)
-            if self.checkBackground(temp_px, segmented_image=self.side_segmented_image, direction="right"):
-                break
-
-        side_right_hip = temp_px
+        side_right_hip = self.getPointFromBackground(side_right_hip, self.side_segmented_image, direction="right")
         # cv2.circle(self.side_segmented_image, side_right_hip, 20, color=(255,0,50), thickness=-1)
 
-        x,y = side_left_hip
-        for x_pixel in range(x,0,-1):
-            temp_px = (x_pixel,y)
-            if self.checkBackground(temp_px, segmented_image=self.side_segmented_image, direction="left"):
-                break
-
-        side_left_hip = temp_px
+        side_left_hip = self.getPointFromBackground(side_left_hip, self.side_segmented_image, direction="left")
         # cv2.circle(self.side_segmented_image, side_left_hip, 20, color=(255,0,50), thickness=-1)
 
         # Calculate side view distance 
@@ -236,11 +231,77 @@ class MeasurementHandler:
         b = b / 2
         return self.getEllipseCircum(a,b)
 
+    def getShoulderMeasurements(self):
+            
+        # ----- Front Image Logic ------
+
+        front_right_shoulder = self.getPixel(RIGHT_SHOULDER, self.front_landmarks, self.front_h, self.front_w)
+        front_left_shoulder = self.getPixel(LEFT_SHOULDER, self.front_landmarks, self.front_h, self.front_w)
+        front_view_shoulder_dist = np.linalg.norm(np.array(front_right_shoulder) - np.array(front_left_shoulder)) # Front view pixel distance
+
+        # ----- Side Image Logic ------
+        side_shoulder_start = self.getPixel(LEFT_SHOULDER, self.side_landmarks, self.side_h, self.side_w)
+        side_shoulder_end = self.getPointFromBackground(side_shoulder_start, self.side_segmented_image, direction="right")
+
+        # cv2.circle(self.side_segmented_image, side_shoulder_end, 20, color=(255,0,50), thickness=-1)
+
+        side_view_shoulder_dist = np.linalg.norm(np.array(side_shoulder_start) - np.array(side_shoulder_end)) # Front view pixel distance
+        # cv2.line(self.side_segmented_image, side_shoulder_start, side_shoulder_end, (255,0,0), 5) 
+
+
+        a = front_view_shoulder_dist * self.scale
+        b = side_view_shoulder_dist * self.scale
+
+        a = a / 2
+
+        return self.getEllipseCircum(a,b)/2 # divide by 2 because shoulder width isn't measured all the way around like hip
+
+
+    def getChestMeasurement(self):
+        # there is no chest landmark, i can estimate by doing a double mid point between chest and waist
+       
+        def getPointsFromDistance(p1, p2, amount=1):
+            # amount is the amount of the distance to apply to the point
+            x_dist = (p2[0]-p1[0]) * amount
+            new_x = int(p1[0] + x_dist)
+
+            y_dist = (p2[1]-p1[1]) * amount
+            new_y = int(p1[1] + y_dist)
+
+            return (new_x,new_y)
+
+        # ---- Front Logic ------
+        fr_shoulder = self.getPixel(RIGHT_SHOULDER, self.front_landmarks, self.front_h, self.front_w)
+        fl_shoulder = self.getPixel(LEFT_SHOULDER,self.front_landmarks, self.front_h, self.front_w)
+
+        fr_hip = self.getPixel(RIGHT_HIP, self.front_landmarks, self.front_h, self.front_w)
+        fl_hip = self.getPixel(LEFT_HIP, self.front_landmarks, self.front_h, self.front_w)
+
+        # cv2.line(self.front_segmented_image, fr_shoulder, fr_hip, (255,0,0), 5) 
+        
+        fr_chest = getPointsFromDistance(fr_shoulder,fr_hip,.3) # I'm using ~30% for a general rule of thumb
+        # cv2.circle(self.front_segmented_image, fr_chest, 15, color=(255,0,50), thickness=-1)
+        fl_chest = getPointsFromDistance(fl_shoulder,fl_hip,.3) 
+        # cv2.circle(self.front_segmented_image, fl_chest, 15, color=(255,0,50), thickness=-1)
+
+        front_dist = np.linalg.norm(np.array(fr_chest) - np.array(fl_chest)) 
+
+        # ---- SIDE LOGIC -----
+        side_shoulder = self.getPixel(RIGHT_SHOULDER, self.side_landmarks, self.side_h, self.side_w)
+        side_hip = self.getPixel(RIGHT_HIP, self.side_landmarks, self.side_h, self.side_w)
+        cv2.line(self.side_segmented_image, side_shoulder, side_hip, (255,0,0), 5)
+
+        mid_chest = getPointsFromDistance(side_shoulder, side_hip, .3)
+        cv2.circle(self.side_segmented_image, mid_chest, 15, color=(255,0,50), thickness=-1)
+
+
 
     def getMeasurements(self):
 
         self.getMeasurementScale()
+
         # Chest / Bust
+        chest_measurement = self.getChestMeasurement()
 
         # Shoulder to Hip (length for shirts)
 
@@ -249,7 +310,7 @@ class MeasurementHandler:
         #sleeve length (short)
 
         #shoulders
-
+        shoulder_measurement = self.getShoulderMeasurements()
 
         # Waist
 
@@ -263,4 +324,4 @@ class MeasurementHandler:
 
         # Hip to floor (not usually used for pants but why not)
 
-        self.saveToCSV(hip_measurment)
+        self.saveToCSV(hip_measurment, shoulder_measurement)
