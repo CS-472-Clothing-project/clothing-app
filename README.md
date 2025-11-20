@@ -1,4 +1,20 @@
 # clothing-app
+
+## Frontend usuage
+Go to frontend directory and download packages
+\
+\
+`npm install`
+\
+\
+Than run the the webserver using Vite
+\
+\
+`npm run dev`
+\
+\
+It runs the server, so you can head over to http://localhost:5173/ or `o + enter` to open in your default browser.
+
 ## Backend usage
 Make sure that your preferred version of conda is installed (I recommend miniconda) and create an environment for the app using python 3.12, then run:
 \
