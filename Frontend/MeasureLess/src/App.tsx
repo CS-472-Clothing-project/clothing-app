@@ -7,6 +7,7 @@ import TakePicture from './takePicture.tsx'
 import Instructions from './instructions'
 import Output from './output.tsx'
 import SideMenu from './components/SideMenu'
+import Login from './login'
 
 // Landing page so people have somewhere to start
 function Home() {
@@ -30,8 +31,9 @@ function App() {
       <Routes>
         {/* If you rename files/paths, update routes here */}
         <Route path="/" element={<Home />} />
-        <Route path="/userInput.tsx" element={<UserInput />} />
-        <Route path="/takePicture.tsx" element={<TakePicture />} />
+          <Route path="/login" element={<Login />} />
+        <Route path="/userInput" element={<UserInput />} />
+        <Route path="/takePicture" element={<TakePicture />} />
         <Route path="/instructions" element={<Instructions />} />
         <Route path="/output" element={<Output />} />
       </Routes>
