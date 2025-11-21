@@ -1,5 +1,5 @@
 import { auth } from "./firebase.js";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth"
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, signInAnonymously } from "firebase/auth"
 
 // email register
 export const doCreateUserWithEmailAndPassword = async (email, password) => {
@@ -7,7 +7,7 @@ export const doCreateUserWithEmailAndPassword = async (email, password) => {
 };
 
 // email sign in
-export const doLoginWithEmailAndPassword = async (email, password) => {
+export const doSignInWithEmailAndPassword = async (email, password) => {
     return signInWithEmailAndPassword(auth, email, password);
 };
 
@@ -23,7 +23,7 @@ export const doSignInWithGoogle = async () => {
 
 // Guest Login
 export const doSignInAnonymously = async () => {
-    return auth.signInAnonymously();
+    return signInAnonymously(auth);
 };
 
 
