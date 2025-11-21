@@ -12,13 +12,41 @@ export default function CameraOverlay() {
     const [sideBlob, setSideBlob] = useState<Blob | null>(null) // side blob for sending
     const [sideUrl, setSideUrl] = useState<string | null>(null) // side url for displaying
 
+    const [countdown, setCountDown] = useState<'no-timer' | 'counting'>('no-timer'); // countdown
+    const [prevTime, setPrevTime] = useState<number | null>(null);
+
     const [facingMode, setFacingMode] = useState('user'); // front("user")/back("environment") camera state
+    const [photoType, setPhotoType] = useState<'front' | 'side'>('front');
 
     // for intial camera and when face change
     useEffect(() => {
         startCamera(); // start camera function on mount or faceChange
         return () => stopCamera(); // stops camera on unmounts 
     }, [facingMode])
+
+    useEffect(() => { // countdown
+        if (countdown !== 'counting') return;
+
+        console.log("counting");
+
+        setPrevTime(10); // 10 sec countdown
+
+        let timer = setInterval(() => {
+            setPrevTime((prevTime) => {
+                if (prevTime === null) return null;
+                if (prevTime === 0) {
+                    clearInterval(timer);
+                    setCountDown('no-timer');
+                    capturePhoto()
+                    return 0;
+                }
+                return prevTime - 1;
+            });
+        }, 1000) // 10 seconds delay
+
+        return () => clearInterval((timer));
+
+    }, [countdown])
 
     // start camera
     const startCamera = async () => {
@@ -55,7 +83,7 @@ export default function CameraOverlay() {
     }
 
     // take photo using camera and display it
-    const capturePhoto = ({ photoType }: { photoType: string }) => {
+    const capturePhoto = () => {
         // use video and canvas
         const video = videoRef.current
         const canvas = canvasRef.current
@@ -150,14 +178,27 @@ export default function CameraOverlay() {
                         autoPlay
                         playsInline
                         muted
-                        className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none rounded-lg"
+                        controls={false}
+                        className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none rounded-lg
+                            [&::-webkit-media-controls]:hidden 
+                            [&::-webkit-media-controls-enclosure]:hidden"
                     />
-                    <button
-                        onClick={() => capturePhoto({ photoType: 'front' })}
-                        className="absolute transform -translate-x-1/2 bottom-8 left-1/2 w-16 h-16 rounded-full bg-gray-50
+                    {(countdown === 'counting' && prevTime != null) ? (
+                        <div className="absolute text-white font-bold text-6xl m-4">
+                            {prevTime}
+                        </div>
+                    ) :
+                        (
+                            <button
+                                onClick={() => {
+                                    setPhotoType('front');
+                                    setCountDown('counting');
+                                }}
+                                className="absolute transform -translate-x-1/2 bottom-8 left-1/2 w-16 h-16 rounded-full bg-gray-50
                         border-3 border-gray-300 hover:border-gray-400 z-10"
-                    >
-                    </button>
+                            >
+                            </button>
+                        )}
                 </>
             ) : (
                 <>
