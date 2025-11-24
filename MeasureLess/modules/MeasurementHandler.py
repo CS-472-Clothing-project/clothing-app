@@ -68,7 +68,9 @@ class MeasurementHandler:
             "Hip Size":measurements["hip"],
             "Shoulder Size":measurements["shoulder"],
             "Short Sleeve Length":measurements["short_sleeve"],
-            "Long Sleeve Length":measurements["long_sleeve"]
+            "Long Sleeve Length":measurements["long_sleeve"],
+            "Waist Size":measurements["waist"],
+            "Inseam Size":measurements["inseam"],
         }])
         df.to_csv("results/result.csv", mode="w", header=True, index=False)
     
@@ -171,7 +173,7 @@ class MeasurementHandler:
 
         return middle_px
     
-    def getPointsFromDistance(self, p1, p2, amount=1):
+    def getPointFromDistance(self, p1, p2, amount=1):
         # amount is the amount of the distance to apply to the point
         x_dist = (p2[0]-p1[0]) * amount
         new_x = int(p1[0] + x_dist)
@@ -294,9 +296,9 @@ class MeasurementHandler:
 
         # cv2.line(self.front_segmented_image, front_right_shoulder, front_right_hip, (255,0,0), 5) 
         
-        fr_chest = self.getPointsFromDistance(front_right_shoulder,front_right_hip,.3) # I'm using ~30% for a general rule of thumb
+        fr_chest = self.getPointFromDistance(front_right_shoulder,front_right_hip,.3) # I'm using ~30% for a general rule of thumb
         # cv2.circle(self.front_segmented_image, fr_chest, 15, color=(255,0,50), thickness=-1)
-        fl_chest = self.getPointsFromDistance(front_left_shoulder,front_left_hip,.3) 
+        fl_chest = self.getPointFromDistance(front_left_shoulder,front_left_hip,.3) 
         #cv2.circle(self.front_segmented_image, fl_chest, 15, color=(255,0,50), thickness=-1)
 
         front_dist = np.linalg.norm(np.array(fr_chest) - np.array(fl_chest)) 
@@ -306,7 +308,7 @@ class MeasurementHandler:
         side_hip = self.getPixel(RIGHT_HIP, self.side_landmarks)
         # cv2.line(self.side_segmented_image, side_shoulder, side_hip, (255,0,0), 5)
 
-        side_mid_chest = self.getPointsFromDistance(side_shoulder, side_hip, .3)
+        side_mid_chest = self.getPointFromDistance(side_shoulder, side_hip, .3)
         # cv2.circle(self.side_segmented_image, side_mid_chest, 20, color=(255,0,50), thickness=-1)
 
         side_right_chest = self.getPointFromBackground(side_mid_chest, self.side_segmented_image, "right")
@@ -337,9 +339,9 @@ class MeasurementHandler:
         # ----- Side Logic -----
         side_hip = self.getPixel(RIGHT_HIP, self.side_landmarks)
         side_hip_left = self.getPointFromBackground(side_hip, self.side_segmented_image, "left")
-        cv2.circle(self.side_segmented_image, side_hip_left, 20, color=(50,0,255), thickness=-1)
+        # cv2.circle(self.side_segmented_image, side_hip_left, 20, color=(50,0,255), thickness=-1)
         side_hip_right = self.getPointFromBackground(side_hip, self.side_segmented_image, "right")
-        cv2.circle(self.side_segmented_image, side_hip_right, 20, color=(50,0,255), thickness=-1)
+        # cv2.circle(self.side_segmented_image, side_hip_right, 20, color=(50,0,255), thickness=-1)
 
         side_dist = np.linalg.norm(np.array(side_hip_right) - np.array(side_hip_left))
 
@@ -358,7 +360,7 @@ class MeasurementHandler:
         front_right_shoulder = self.getPixel(RIGHT_SHOULDER, self.front_landmarks)
         front_right_elbow = self.getPixel(RIGHT_ELBOW, self.front_landmarks)
 
-        front_sleeve = self.getPointsFromDistance(front_right_shoulder, front_right_elbow, .6)
+        front_sleeve = self.getPointFromDistance(front_right_shoulder, front_right_elbow, .6)
         # cv2.circle(self.front_segmented_image, front_sleeve, 20, color=(255,0,50), thickness=-1)
         # cv2.circle(self.side_segmented_image, side_shoulder_end, 20, color=(255,0,50), thickness=-1)
         front_dist = np.linalg.norm(np.array(front_sleeve) - np.array(front_right_shoulder))
@@ -367,7 +369,7 @@ class MeasurementHandler:
         side_right_shoulder = self.getPixel(RIGHT_SHOULDER, self.side_landmarks)
         side_right_elbow = self.getPixel(RIGHT_ELBOW, self.side_landmarks)
 
-        side_sleeve = self.getPointsFromDistance(side_right_shoulder, side_right_elbow, .6)
+        side_sleeve = self.getPointFromDistance(side_right_shoulder, side_right_elbow, .6)
         # cv2.circle(self.side_segmented_image, side_sleeve, 20, color=(255,0,50), thickness=-1)
 
         side_sleeve_up = self.getPointFromBackground(side_sleeve, self.side_segmented_image, "up")
@@ -393,7 +395,7 @@ class MeasurementHandler:
 
         # cv2.line(self.front_segmented_image, front_right_shoulder, front_right_hip, (255,0,0), 5) 
 
-        cv2.line(self.front_segmented_image, front_elbow_left, front_elbow_right, (255,0,50), 5)
+        # cv2.line(self.front_segmented_image, front_elbow_left, front_elbow_right, (255,0,50), 5)
         front_dist = np.linalg.norm(np.array(front_elbow_left) - np.array(front_elbow_right))
 
         # ---- Side Logic -----
@@ -403,6 +405,66 @@ class MeasurementHandler:
         side_dist = np.linalg.norm(np.array(side_left_wrist) - np.array(side_left_shoulder))
 
         # Ellipse Logic
+        a = front_dist * self.scale
+        b = side_dist * self.scale
+
+        a = a/2
+        b = b/2
+
+        return self.getEllipseCircum(a,b) / 2
+        
+    def getWaistMeasurement(self):
+        # ---- Front logic ----
+        front_right_shoulder = self.getPixel(RIGHT_SHOULDER, self.front_landmarks)
+        front_left_shoulder = self.getPixel(LEFT_SHOULDER, self.front_landmarks)
+        front_right_hip = self.getPixel(RIGHT_HIP, self.front_landmarks)
+        front_left_hip = self.getPixel(LEFT_HIP, self.front_landmarks)
+
+        front_right_waist = self.getPointFromDistance(front_right_shoulder, front_right_hip, .65)
+        front_left_waist = self.getPointFromDistance(front_left_shoulder, front_left_hip, .65)
+
+        # cv2.line(self.front_segmented_image, front_right_shoulder, front_right_hip, color=(0,0,255))
+      
+        front_right_waist = self.getPointFromBackground(front_right_waist, self.front_segmented_image, "left")
+        front_left_waist = self.getPointFromBackground(front_left_waist, self.front_segmented_image, "right")
+        # cv2.circle(self.front_segmented_image, front_right_waist, 20, color=(255,0,50), thickness=-1)
+        # cv2.circle(self.front_segmented_image, front_left_waist, 20, color=(255,0,255), thickness=-1)
+
+        front_dist = np.linalg.norm(np.array(front_right_waist) - np.array(front_left_waist))
+
+        # ----- Side Logic -----
+        side_shoulder = self.getPixel(LEFT_SHOULDER, self.side_landmarks)
+        side_hip = self.getPixel(LEFT_HIP, self.side_landmarks)
+        side_waist = self.getPointFromDistance(side_shoulder, side_hip, .6)
+        side_right_waist = self.getPointFromBackground(side_waist, self.side_segmented_image, "right")
+        side_left_waist = self.getPointFromBackground(side_waist, self.side_segmented_image, "left")
+
+        # cv2.circle(self.side_segmented_image, side_right_waist, 30, color=(25,0,25), thickness=-1)
+        # cv2.circle(self.side_segmented_image, side_left_waist, 30, color=(100,0,100), thickness=-1)
+
+        side_dist = np.linalg.norm(np.array(side_right_waist) - np.array(side_left_waist))
+
+        # -- Ellipse logic --
+        a = front_dist * self.scale
+        b = side_dist * self.scale
+
+        a = a/2
+        b = b/2
+        return self.getEllipseCircum(a,b)
+
+    def getInseamMeasurement(self):
+        front_right_hip = self.getPixel(RIGHT_HIP, self.front_landmarks)
+        front_right_ankle = self.getPixel(RIGHT_ANKLE, self.front_landmarks)
+
+        front_dist = np.linalg.norm(np.array(front_right_ankle) - np.array(front_right_hip))
+
+        side_knee = self.getPixel(LEFT_KNEE, self.side_landmarks)
+        right_side_knee = self.getPointFromBackground(side_knee, self.side_segmented_image, "right")
+        left_side_knee = self.getPointFromBackground(side_knee, self.side_segmented_image, "left")
+
+        side_dist = np.linalg.norm(np.array(right_side_knee) - np.array(left_side_knee))
+
+        # -- Ellipse logic --
         a = front_dist * self.scale
         b = side_dist * self.scale
 
@@ -427,29 +489,22 @@ class MeasurementHandler:
         short_sleeve_measurement = round(self.getShortSleeve(),2)
         #shoulders
         shoulder_measurement = round(self.getShoulderMeasurements(),2)
-
         # Waist
-
+        waist_measurement = round(self.getWaistMeasurement(),2)
         # Hip 
-        hip_measurment = round(self.getHipMeasurement(),2)
-        # print(f"Hip Size (inches):{hip_measurment:.2f}")
+        hip_measurement = round(self.getHipMeasurement(),2)
+        #Inseam 
+        inseam_measurement = round(self.getInseamMeasurement(),2)
 
-        # Hip to inseam
-
-        #Inseam to floor (pant length)
-
-        # Hip to floor (not usually used for pants but why not)
         measurements = {
             "chest": chest_measurement,
             "length": chest_length,
             "long_sleeve": long_sleeve_measurement,
             "short_sleeve": short_sleeve_measurement,
             "shoulder":shoulder_measurement,
-            "waist": "Null",
-            "hip": hip_measurment,
-            "hip_to_inseam":"Null",
-            "inseam_to_floor":"Null",
-            "Hip to floor":"Null", 
+            "waist": waist_measurement,
+            "hip": hip_measurement,
+            "inseam": inseam_measurement,
         }
 
         self.saveToCSV(measurements)
