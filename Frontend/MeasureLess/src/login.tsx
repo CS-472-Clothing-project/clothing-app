@@ -16,7 +16,7 @@ const LoginForm = () => {
         if(!isSigningIn){
             setIsSignIn(true);
             await doSignInWithEmailAndPassword(email, password);
-            navigate('/userInput');
+            navigate("/userInput");
         }
     };
     const onGuestLogin = async (e) => {
@@ -24,19 +24,20 @@ const LoginForm = () => {
         if(!isSigningIn){
             setIsSignIn(true);
             await doSignInAnonymously();
-            navigate('/userInput');
+            navigate("/userInput");
         }
     };
 
-    // const onGoogleSigIn = async (e){
-    //     e.preventDefault();
-    //     if(!isSigningIn){
-    //         setIsSignIn(true);
-    //         doSignInWithGoogle().catch(err =>{
-    //             setIsSignIn(false);
-    //         });
-    //     }
-    // };
+    const onGoogleSigIn = async (e) =>{
+        e.preventDefault();
+        if(!isSigningIn){
+            setIsSignIn(true);
+            doSignInWithGoogle().catch(err =>{
+                setIsSignIn(false);
+            });
+            navigate("/userInput");
+        }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -87,6 +88,15 @@ const LoginForm = () => {
                         className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full disabled:opacity-50"
                     >
                         {isSigningIn ? 'Signing In...' : 'Continue as Guest'}
+                    </button>
+                </div>
+                <div className="mt-4">
+                    <button
+                        onClick={onGoogleSigIn}
+                        disabled={isSigningIn}
+                        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full disabled:opacity-50"
+                    >
+                        {isSigningIn ? 'Signing In...' : 'Sign in with Google'}
                     </button>
                 </div>
             </div>

@@ -63,7 +63,7 @@ function AppContent() {
         {/* If you rename files/paths, update routes here */}
         //Public Routes
         <Route path="/" element={<Home />} />
-          <Route path="/login" element={<LoggedInRoute><Login /></LoggedInRoute>} />
+          <Route path="/login" element={<Login />}></Route>
 
         //Protected Routes
         <Route path="/userInput" element={<ProtectedRoute><UserInput /></ProtectedRoute>} />
