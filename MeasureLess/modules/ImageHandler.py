@@ -8,16 +8,18 @@ import os
 
 class ImageHandler:
     # TODO: Update members to account for both images
-    def __init__(self, fileNames, segTightness=.5, debug=True):
-        self.fileNames = fileNames
-        self.segTightness = segTightness
+    def __init__(self, fileNames, imageCount = 2, segTightness=.5, debug=True):
+        # Filenames contains name in index 0 and extension in index 1
+        self.fileData = fileNames
+        self.imageCount = imageCount
         self.backgroundColor = [4, 244, 4]
-        self.segmentedImage = [None] * 2
-        self.annotatedImage = [None] * 2
-        self.detectedImage = [None] * 2
-        self.cvImage = [None] * 2
-        self.ndArrayImage = [None] * 2
-        self.mpImage = [None] * 2
+        self.segTightness = segTightness
+        self.segmentedImage = [None] * imageCount
+        self.annotatedImage = [None] * imageCount
+        self.detectedImage = [None] * imageCount
+        self.cvImage = [None] * imageCount
+        self.ndArrayImage = [None] * imageCount
+        self.mpImage = [None] * imageCount
         self.loadSuccess = False
         self.debug = debug
         
@@ -25,21 +27,30 @@ class ImageHandler:
     def loadImages(self, fileNames):
         # TODO Update this change this
         try:
-            # Should be unneeded for now
-            # fileName1 = input("Input first file name with extension: ")
-            # print("Loading image ", fileName1, "...")
-            self.cvImage[0] = cv2.imread(fileNames[0])
-            # self.mpImage[0] = mp.Image.create_from_file(fileName1)
-            tmp_image = self.cvImage[0].copy()
-            self.mpImage[0] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
-            self.ndArrayImage[0] = self.mpImage[0].numpy_view()
+            fullNames = []
+            for i in range(self.imageCount):
+                fullName = self.fileData[0] + f"{str(i)}." + self.fileData[1]
+                self.cvImage[i] = cv2.imread(fullName)
+                
+                tmpImage = self.cvImage[i].copy()
+                self.mpImage[i] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmpImage)
+                self.ndArrayImage[i] = self.mpImage[i].numpy_view()
+                
+            # # Should be unneeded for now
+            # # fileName1 = input("Input first file name with extension: ")
+            # # print("Loading image ", fileName1, "...")
+            # self.cvImage[0] = cv2.imread(fileNames[0])
+            # # self.mpImage[0] = mp.Image.create_from_file(fileName1)
+            # tmp_image = self.cvImage[0].copy()
+            # self.mpImage[0] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
+            # self.ndArrayImage[0] = self.mpImage[0].numpy_view()
         
-            # fileName2 = input("Input second file name with extension: ")
-            self.cvImage[1] = cv2.imread(fileNames[1])
-            tmp_image = self.cvImage[1].copy()
-            self.mpImage[1] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
-            # self.mpImage[1] = mp.Image.create_from_file(fileName2)
-            self.ndArrayImage[1] = self.mpImage[1].numpy_view()
+            # # fileName2 = input("Input second file name with extension: ")
+            # self.cvImage[1] = cv2.imread(fileNames[1])
+            # tmp_image = self.cvImage[1].copy()
+            # self.mpImage[1] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
+            # # self.mpImage[1] = mp.Image.create_from_file(fileName2)
+            # self.ndArrayImage[1] = self.mpImage[1].numpy_view()
             
         except:
             logging.exception("There was an error when loading the image")
