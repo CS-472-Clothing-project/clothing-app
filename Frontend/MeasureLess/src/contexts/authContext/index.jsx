@@ -1,6 +1,7 @@
 import { auth } from "../../firebase/firebase";
 import React, { useEffect, useState, useContext } from "react";
 import { onAuthStateChanged } from "firebase/auth"
+import { doSaveToProfile, deleteFromProfile} from "@/firebase/db.js";
 
 const AuthContext = React.createContext();
 
@@ -41,5 +42,16 @@ export function AuthProvider({ children }) {
         </AuthContext.Provider>
     )
 
+}
 
+export function userContext(){
+    return auth.currentUser;
+}
+
+export function deleteFromProfile(){
+    return deleteFromProfile();
+}
+
+export function saveToProfile(measurements){
+    return doSaveToProfile(measurements);
 }
