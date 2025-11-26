@@ -8,6 +8,7 @@ import Instructions from './instructions'
 import Output from './output.tsx'
 import SideMenu from './components/SideMenu'
 import Login from './login'
+import Register from './register'
 import { AuthProvider, useAuth } from './contexts/authContext/index.jsx'
 
 // Protected Route component
@@ -64,6 +65,7 @@ function AppContent() {
         //Public Routes
         <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />}></Route>
+          <Route path="/register" element={<Register />}></Route>
 
         //Protected Routes
         <Route path="/userInput" element={<ProtectedRoute><UserInput /></ProtectedRoute>} />
