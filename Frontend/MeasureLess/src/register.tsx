@@ -1,28 +1,25 @@
 import React, { useState } from 'react';
-import { doSignInWithGoogle, doSignInWithEmailAndPassword, doSignInAnonymously } from './firebase/auth.js'
+import {doCreateUserWithEmailAndPassword, doSignInWithEmailAndPassword} from './firebase/auth.js'
 //import { useAuth } from './contexts/authContext/index.jsx'
 import { useNavigate } from 'react-router-dom'
-import { FcGoogle } from "react-icons/fc";
 
 const getErrorMessage = (code) => {
     switch (code) {
-        case "auth/invalid-credential":
-        case "auth/wrong-password":
-            return "Incorrect email or password.";
+        case "auth/email-already-in-use":
+            return "An account with this email already exists.";
 
-        case "auth/user-not-found":
-            return "No account found with that email.";
+        case "auth/weak-password":
+            return "Your password is too weak. Please choose a stronger one.";
 
         case "auth/too-many-requests":
-            return "Too many attempts. Try again later.";
+            return "Too many failed attempts. Try again later.";
 
         default:
             return "Something went wrong. Please try again.";
     }
 };
 
-
-const LoginForm = () => {
+const RegisterForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isSigningIn, setIsSignIn] = useState(false);
@@ -34,34 +31,7 @@ const LoginForm = () => {
         if(!isSigningIn){
             try {
                 setIsSignIn(true);
-                await doSignInWithEmailAndPassword(email, password);
-                navigate("/userInput");
-            } catch (error) {
-                setErrorMessage(getErrorMessage(error.code));
-                setIsSignIn(false);
-            }
-        }
-    };
-    const onGuestLogin = async (e) => {
-        e.preventDefault();
-        if(!isSigningIn){
-            try {
-                setIsSignIn(true);
-                await doSignInAnonymously()
-                navigate("/userInput");
-            } catch (error) {
-                setErrorMessage(getErrorMessage(error.code));
-                setIsSignIn(false);
-            }
-        }
-    };
-
-    const onGoogleSigIn = async (e) =>{
-        e.preventDefault();
-        if(!isSigningIn){
-            try {
-                setIsSignIn(true);
-                await doSignInWithGoogle();
+                await doCreateUserWithEmailAndPassword(email, password);
                 navigate("/userInput");
             } catch (error) {
                 setErrorMessage(getErrorMessage(error.code));
@@ -73,7 +43,7 @@ const LoginForm = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
-                <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Login to your account</h2>
+                <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Register</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
@@ -108,40 +78,22 @@ const LoginForm = () => {
                             type="submit"
                             className="bg-purple-300 hover:bg-purple-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
                         >
-                            Sign In
+                            Sign Up
                         </button>
+                    </div>
+                    <div className="mt-4 ">
+                        Already have an account?{" "}
+                        <a href="/login" className="text-black font-bold focus:shadow-outline">
+                            Sign in
+                        </a>
                     </div>
                 </form>
                 {errorMessage && (
                     <p className="text-red-500 text-sm mt-3">{errorMessage}</p>
                 )}
-                <div className="mt-4">
-                    <button
-                        onClick={onGoogleSigIn}
-                        disabled={isSigningIn}
-                        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full disabled:opacity-50 flex items-center justify-center gap-2"
-                    >
-                        {isSigningIn ? 'Signing In...' : <><FcGoogle/>Sign in with Google</>}
-                    </button>
-                </div>
-                <div className="mt-4">
-                    <button
-                        onClick={onGuestLogin}
-                        disabled={isSigningIn}
-                        className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full disabled:opacity-50"
-                    >
-                        {isSigningIn ? 'Signing In...' : 'Continue as Guest'}
-                    </button>
-                </div>
-                <div className="mt-4 ">
-                    Don't have an account?{" "}
-                    <a href="/register" className="text-black font-bold focus:shadow-outline">
-                        Sign up
-                    </a>
-                </div>
             </div>
         </div>
     );
 };
 
-export default LoginForm;
+export default RegisterForm;
