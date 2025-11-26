@@ -1,12 +1,45 @@
 // App.tsx
 // App router: defines all routes and gives Home a simple landing with the menu.
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import UserInput from './userInput'
 import TakePicture from './takePicture.tsx'
 import Instructions from './instructions'
 import Output from './output.tsx'
 import SideMenu from './components/SideMenu'
+import Login from './login'
+import Register from './register'
+import { AuthProvider, useAuth } from './contexts/authContext/index.jsx'
+
+// Protected Route component
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { userLoggedIn, loading } = useAuth()
+
+  if (loading) {
+    return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div>Loading...</div>
+        </div>
+    )
+  }
+  // if not logged cannot access
+  return userLoggedIn ? <>{children}</> : <Navigate to="/login" />
+}
+
+// User already logged in
+function LoggedInRoute({ children }: { children: React.ReactNode }) {
+  const { userLoggedIn, loading } = useAuth()
+
+  if (loading) {
+    return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div>Loading...</div>
+        </div>
+    )
+  }
+  // if logged in cannot access (such as login page)
+  return !userLoggedIn ? <>{children}</> : <Navigate to="/userInput" />
+}
 
 // Landing page so people have somewhere to start
 function Home() {
@@ -24,19 +57,32 @@ function Home() {
   )
 }
 
-function App() {
+function AppContent() {
   return (
     <BrowserRouter>
       <Routes>
         {/* If you rename files/paths, update routes here */}
+        //Public Routes
         <Route path="/" element={<Home />} />
-        <Route path="/userInput.tsx" element={<UserInput />} />
-        <Route path="/takePicture.tsx" element={<TakePicture />} />
-        <Route path="/instructions" element={<Instructions />} />
-        <Route path="/output" element={<Output />} />
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/register" element={<Register />}></Route>
+
+        //Protected Routes
+        <Route path="/userInput" element={<ProtectedRoute><UserInput /></ProtectedRoute>} />
+        <Route path="/takePicture" element={<ProtectedRoute><TakePicture /></ProtectedRoute>} />
+        <Route path="/instructions" element={<ProtectedRoute><Instructions /></ProtectedRoute>} />
+        <Route path="/output" element={<ProtectedRoute><Output /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   )
+}
+
+function App() {
+  return(
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
 }
 
 export default App

@@ -80,8 +80,8 @@ export default function SideMenu() {
 
         <nav className="p-2">
           <NavItem to="/"               label="Home"         icon={<FaHome />} />
-          <NavItem to="/userInput.tsx"  label="User Input"   icon={<FaListUl />} />
-          <NavItem to="/takePicture.tsx"label="Take Picture" icon={<FaCamera />} />
+          <NavItem to="/userInput"      label="User Input"   icon={<FaListUl />} />
+          <NavItem to="/takePicture"    label="Take Picture" icon={<FaCamera />} />
           <NavItem to="/instructions"   label="Instructions" icon={<FaInfoCircle />} />
           <NavItem to="/output"         label="Measurements" icon={<FaRulerCombined />} />
         </nav>

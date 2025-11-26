@@ -91,7 +91,7 @@ export default function Instructions() {
           </ol>
           <div className="pt-3">
             {/* Link to the camera page */}
-            <a href="/takePicture.tsx" className="inline-block px-5 py-2 rounded-lg bg-foreground text-background">
+            <a href="/takePicture" className="inline-block px-5 py-2 rounded-lg bg-foreground text-background">
               Get Measured
             </a>
           </div>
