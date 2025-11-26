@@ -3,6 +3,7 @@ import logging
 import mediapipe as mp
 import cv2
 import pandas as pd
+import json
 from math import pi, sqrt
 
 # points for landmarked image
@@ -60,19 +61,10 @@ class MeasurementHandler:
         self.side_segmented_image = self.imageHandler.segmentedImage[1]
         print("Measurement Handler Stuff ...")
     
-    def saveToCSV(self, measurements):
-        print(f"Saving measurements to results/results.csv")
-        df = pd.DataFrame([{
-            "Chest Size":measurements["chest"],
-            "Chest Length":measurements["length"],
-            "Hip Size":measurements["hip"],
-            "Shoulder Size":measurements["shoulder"],
-            "Short Sleeve Length":measurements["short_sleeve"],
-            "Long Sleeve Length":measurements["long_sleeve"],
-            "Waist Size":measurements["waist"],
-            "Inseam Size":measurements["inseam"],
-        }])
-        df.to_csv("results/result.csv", mode="w", header=True, index=False)
+    def saveToJSON(self, measurements):
+        with open('results/results.json', 'w') as file:
+            json.dump(measurements, file, indent=4)
+        return
     
     # Translate normalized landmark to pixel coordinates CV2 can use
     def getPixel(self, index, landmarks):
@@ -507,4 +499,4 @@ class MeasurementHandler:
             "inseam": inseam_measurement,
         }
 
-        self.saveToCSV(measurements)
+        self.saveToJSON(measurements)

@@ -19,9 +19,9 @@ class SegmentationHandler:
     def segmentImage(self):
         # Using the mediapipe pose module to set options and process the image
         # provided with imageHandler
-        processedImage = [None] * 2
-        image = [None] * 2
-        condition = [None] * 2
+        processedImage = [None] * self.imageHandler.imageCount
+        image = [None] * self.imageHandler.imageCount
+        condition = [None] * self.imageHandler.imageCount
         with mp.solutions.pose.Pose(static_image_mode=True,
                                     model_complexity=2,
                                     enable_segmentation=True) as pose:

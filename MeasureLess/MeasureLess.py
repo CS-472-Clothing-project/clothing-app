@@ -11,7 +11,7 @@ import sys
 # TODO: Update logic to accept and process 2 images at once. One side profile, one front profile
 def main(args):
 
-    accepted_img_types = [".jpg", ".jpeg", ".png", ".bmp"]
+    accepted_img_types = ["jpg", "jpeg", "png", "bmp"]
     fileNames = []
     
     # Short intro message for development
@@ -22,18 +22,23 @@ def main(args):
     #     print(f"Unsupported file type: {args.fImg}.")
     #     sys.exit(0)
     
-    if not(os.path.splitext(args.fImg)[1] in accepted_img_types and os.path.splitext(args.sImg)[1] in accepted_img_types):
-        print(f"Unsupported file type detected. {args.fImg} or {args.sImg}.")
+    # if not(os.path.splitext(args.fImg)[1] in accepted_img_types and os.path.splitext(args.sImg)[1] in accepted_img_types):
+    #     print(f"Unsupported file type detected. {args.fImg} or {args.sImg}.")
+    #     sys.exit(0)
+    
+    if args.iExt not in accepted_img_types:
+        print(f"Unsupported file extension: {args.iExt}. Supported extensions are: {accepted_img_types}")
         sys.exit(0)
 
 
     # Creating the image object by calling the import handler
     # Make fileName a list and pass that into imageHandler. Might work well for opening the two images
-    fileNames.append(args.fImg)
-    fileNames.append(args.sImg)
+    fileNames.append(args.iName)
+    fileNames.append(args.iExt)
     print(fileNames)
     detectionMode = args.dM
     segmentationTightness = args.sT
+    imageCount = args.iC
 
     # print("segmentation type: ", type(segmentationTightness))
     # detectionMode = int(input("Select detector mode (1 = lite, 2 = full, 3 = heavy): "))
@@ -41,9 +46,9 @@ def main(args):
     
     # Checking if tightness was specified
     if not segmentationTightness:
-        imageHandler = ImageHandler.ImageHandler(fileNames)
+        imageHandler = ImageHandler.ImageHandler(fileNames, int(imageCount))
     else:
-        imageHandler = ImageHandler.ImageHandler(fileNames, float(segmentationTightness))
+        imageHandler = ImageHandler.ImageHandler(fileNames, int(imageCount), float(segmentationTightness))
         
     
     imageHandler.loadImages(fileNames)
