@@ -124,6 +124,11 @@ export default function Output() {
     alert("Saved to profile (local storage).");
   }
 
+  // View prior measurements
+  function handlePriorMeasurements(){
+    console.log("hello");
+  }
+
   return (
     <div className="min-h-screen w-full flex justify-center">
       <main className="w-full max-w-5xl px-4 md:px-8 py-6 md:py-10 space-y-6">
@@ -136,13 +141,13 @@ export default function Output() {
             <span className="mr-1 text-sm opacity-70">Units:</span>
             <div className="inline-flex rounded-full border overflow-hidden">
               <button
-                className={`px-3 py-1 text-sm ${unit === "in" ? "bg-foreground text-background" : ""}`}
+                className={`px-3 py-1 text-sm hover:cursor-pointer ${unit === "in" ? "bg-foreground text-background" : ""}`}
                 onClick={() => setUnit("in")}
               >
                 In.
               </button>
               <button
-                className={`px-3 py-1 text-sm ${unit === "cm" ? "bg-foreground text-background" : ""}`}
+                className={`px-3 py-1 text-sm hover:cursor-pointer ${unit === "cm" ? "bg-foreground text-background" : ""}`}
                 onClick={() => setUnit("cm")}
               >
                 Cm.
@@ -175,10 +180,13 @@ export default function Output() {
 
         {/* Page actions */}
         <div className="flex flex-col md:flex-row gap-3 md:gap-4 md:justify-center">
-          <button onClick={handleSaveProfile} className="px-6 py-2 rounded-full border hover:opacity-90">
+          <button onClick={handleSaveProfile} className="px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer">
             Save to profile
           </button>
-          <button onClick={handleExportCSV} className="px-6 py-2 rounded-full border hover:opacity-90">
+          <button onClick={handlePriorMeasurements} className="px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer">
+            Past Measurements
+          </button>
+          <button onClick={handleExportCSV} className="px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer">
             Export to CSV
           </button>
           <Link to="/TakePicture" className="px-6 py-2 rounded-full border hover:opacity-90 text-center">
