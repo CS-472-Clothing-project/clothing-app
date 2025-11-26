@@ -1,8 +1,23 @@
 import React, { useState } from 'react';
-import { doCreateUserWithEmailAndPassword } from './firebase/auth.js'
+import {doCreateUserWithEmailAndPassword, doSignInWithEmailAndPassword} from './firebase/auth.js'
 //import { useAuth } from './contexts/authContext/index.jsx'
 import { useNavigate } from 'react-router-dom'
 
+const getErrorMessage = (code) => {
+    switch (code) {
+        case "auth/email-already-in-use":
+            return "An account with this email already exists.";
+
+        case "auth/weak-password":
+            return "Your password is too weak. Please choose a stronger one.";
+
+        case "auth/too-many-requests":
+            return "Too many failed attempts. Try again later.";
+
+        default:
+            return "Something went wrong. Please try again.";
+    }
+};
 
 const RegisterForm = () => {
     const [email, setEmail] = useState('');
@@ -14,9 +29,14 @@ const RegisterForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if(!isSigningIn){
-            setIsSignIn(true);
-            await doCreateUserWithEmailAndPassword(email, password);
-            navigate("/userInput");
+            try {
+                setIsSignIn(true);
+                await doCreateUserWithEmailAndPassword(email, password);
+                navigate("/userInput");
+            } catch (error) {
+                setErrorMessage(getErrorMessage(error.code));
+                setIsSignIn(false);
+            }
         }
     };
 
@@ -68,6 +88,9 @@ const RegisterForm = () => {
                         </a>
                     </div>
                 </form>
+                {errorMessage && (
+                    <p className="text-red-500 text-sm mt-3">{errorMessage}</p>
+                )}
             </div>
         </div>
     );

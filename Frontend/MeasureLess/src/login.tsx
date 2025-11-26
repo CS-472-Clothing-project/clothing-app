@@ -4,6 +4,23 @@ import { doSignInWithGoogle, doSignInWithEmailAndPassword, doSignInAnonymously }
 import { useNavigate } from 'react-router-dom'
 import { FcGoogle } from "react-icons/fc";
 
+const getErrorMessage = (code) => {
+    switch (code) {
+        case "auth/invalid-credential":
+        case "auth/wrong-password":
+            return "Incorrect email or password.";
+
+        case "auth/user-not-found":
+            return "No account found with that email.";
+
+        case "auth/too-many-requests":
+            return "Too many attempts. Try again later.";
+
+        default:
+            return "Something went wrong. Please try again.";
+    }
+};
+
 
 const LoginForm = () => {
     const [email, setEmail] = useState('');
@@ -15,28 +32,41 @@ const LoginForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if(!isSigningIn){
-            setIsSignIn(true);
-            await doSignInWithEmailAndPassword(email, password);
-            navigate("/userInput");
+            try {
+                setIsSignIn(true);
+                await doSignInWithEmailAndPassword(email, password);
+                navigate("/userInput");
+            } catch (error) {
+                setErrorMessage(getErrorMessage(error.code));
+                setIsSignIn(false);
+            }
         }
     };
     const onGuestLogin = async (e) => {
         e.preventDefault();
         if(!isSigningIn){
-            setIsSignIn(true);
-            await doSignInAnonymously();
-            navigate("/userInput");
+            try {
+                setIsSignIn(true);
+                await doSignInAnonymously()
+                navigate("/userInput");
+            } catch (error) {
+                setErrorMessage(getErrorMessage(error.code));
+                setIsSignIn(false);
+            }
         }
     };
 
     const onGoogleSigIn = async (e) =>{
         e.preventDefault();
         if(!isSigningIn){
-            setIsSignIn(true);
-            doSignInWithGoogle().catch(err =>{
+            try {
+                setIsSignIn(true);
+                await doSignInWithGoogle();
+                navigate("/userInput");
+            } catch (error) {
+                setErrorMessage(getErrorMessage(error.code));
                 setIsSignIn(false);
-            });
-            navigate("/userInput");
+            }
         }
     };
 
@@ -82,6 +112,9 @@ const LoginForm = () => {
                         </button>
                     </div>
                 </form>
+                {errorMessage && (
+                    <p className="text-red-500 text-sm mt-3">{errorMessage}</p>
+                )}
                 <div className="mt-4">
                     <button
                         onClick={onGoogleSigIn}
