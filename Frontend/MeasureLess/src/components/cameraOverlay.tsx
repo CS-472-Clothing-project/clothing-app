@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function CameraOverlay() {
+interface prop {
+    height: number;
+}
+
+export default function CameraOverlay({ height }: prop) {
     const videoRef = useRef<HTMLVideoElement | null>(null); // ref to video
     const canvasRef = useRef<HTMLCanvasElement | null>(null); // ref to canvas to convert to img
     const [stream, setStream] = useState<MediaStream | null>(null); // MediaStream 
@@ -155,8 +159,9 @@ export default function CameraOverlay() {
                 return;
             }
             // create formData -> append information
+            console.log(height.toString());
             const formData = new FormData();
-            formData.append("height", "160");
+            formData.append("height", height.toString());
             formData.append("bodyType", "male");
             // append blob
             formData.append("frontImage", frontBlob, "front.jpg")
@@ -183,9 +188,13 @@ export default function CameraOverlay() {
         return (
             <>
                 {/* if you took the photo */}
-                <img src={url ?? undefined}
-                    className="absolute top-0 left-0 w-full h-full object-cover"
-                />
+                {url && (
+                    <img
+                        src={url}
+                        alt="Captured photo"
+                        className="absolute top-0 left-0 w-full h-full object-cover"
+                    />
+                )}
                 <button
                     onClick={() => {
                         stopCamera();
