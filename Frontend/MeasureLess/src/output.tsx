@@ -181,7 +181,7 @@ export default function Output() {
           <button onClick={handleExportCSV} className="px-6 py-2 rounded-full border hover:opacity-90">
             Export to CSV
           </button>
-          <Link to="/takePicture.tsx" className="px-6 py-2 rounded-full border hover:opacity-90 text-center">
+          <Link to="/TakePicture" className="px-6 py-2 rounded-full border hover:opacity-90 text-center">
             Retake Photos
           </Link>
         </div>

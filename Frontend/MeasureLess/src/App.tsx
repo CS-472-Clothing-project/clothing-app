@@ -37,7 +37,7 @@ function LoggedInRoute({ children }: { children: React.ReactNode }) {
     )
   }
   // if logged in cannot access (such as login page)
-  return !userLoggedIn ? <>{children}</> : <Navigate to="/login" />
+  return !userLoggedIn ? <>{children}</> : <Navigate to="/userInput" />
 }
 
 // Landing page so people have somewhere to start
