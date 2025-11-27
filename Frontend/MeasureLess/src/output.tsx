@@ -7,7 +7,7 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import SideMenu from "./components/SideMenu";
-import { doSaveToProfile} from './firebase/db.js';
+import { doSaveToProfile, deleteFromProfile, getMeasurementsFromDB } from './firebase/db.js';
 import { auth } from './firebase/firebase.js'
 
 export type MeasurementPayload = Partial<{
@@ -144,7 +144,7 @@ export default function Output() {
 
     // View prior measurements
     function handlePriorMeasurements() {
-        console.log("hello");
+        //measurements = getMeasurementsFromDB();
     }
 
     return (
