@@ -48,7 +48,7 @@ export function userContext(){
     return auth.currentUser;
 }
 
-export function deleteFromProfile(){
+export function removeFromProfile(){
     return deleteFromProfile();
 }
 
