@@ -1,7 +1,6 @@
 import { auth } from "../../firebase/firebase";
 import React, { useEffect, useState, useContext } from "react";
 import { onAuthStateChanged } from "firebase/auth"
-import { doSaveToProfile, deleteFromProfile} from "@/firebase/db.js";
 
 const AuthContext = React.createContext();
 
@@ -11,7 +10,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
-    const [userLoggedIn , setUserLoggedIn] = useState(false);
+    const [userLoggedIn, setUserLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -23,7 +22,7 @@ export function AuthProvider({ children }) {
         if (user) {
             setCurrentUser(user); //maybe change to (...user)
             setUserLoggedIn(true);
-        } else{
+        } else {
             setCurrentUser(null);
             setUserLoggedIn(false);
         }
@@ -36,7 +35,7 @@ export function AuthProvider({ children }) {
         loading
     }
 
-    return(
+    return (
         <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
@@ -44,14 +43,3 @@ export function AuthProvider({ children }) {
 
 }
 
-export function userContext(){
-    return auth.currentUser;
-}
-
-export function removeFromProfile(){
-    return deleteFromProfile();
-}
-
-export function saveToProfile(measurements){
-    return doSaveToProfile(measurements);
-}
