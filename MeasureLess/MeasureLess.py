@@ -11,41 +11,34 @@ import sys
 # TODO: Update logic to accept and process 2 images at once. One side profile, one front profile
 # TODO: Convert MeasureLess.py to be a class and maintain its function, 
 #       hardcode values, and figure out how images will be passed through
+#       Potentially get rid of debug
 class MeasureLess:
-    def __init__(self, debug=True):
-        print("Initializer")
+    def __init__(self, images, userHeight, detectionMode = 2, segmentationTightness = 0.5):
+        # Initialize the variables that will be needed for MeasureLess' pipeline
+        # Not sure how images will be passed through, will be changed
+        self.images = images
+        self.userHeight = userHeight
+        self.detectionMode = detectionMode
+        self.segmentationTightness = segmentationTightness
+        
     # Write a funciton that will essentially run the pipeline for MeasureLess
     def runMeasureLess(self):
         acceptedImgTypes = [".jpg", ".jpeg", ".png", ".bmp"]
-        fileNames = []
-
-        if not(os.path.splitext(args.fImg)[1] in acceptedImgTypes and os.path.splitext(args.sImg)[1] in acceptedImgTypes):
-            print(f"Unsupported file type detected. {args.fImg} or {args.sImg}.")
-            sys.exit(0)
         
-        # Creating the image object by calling the import handler
-        # Make fileName a list and pass that into imageHandler. Might work well for opening the two images
-        fileNames.append(args.fImg)
-        fileNames.append(args.sImg)
-        print(fileNames)
-        detectionMode = args.dM
-        segmentationTightness = args.sT
 
-        # print("segmentation type: ", type(segmentationTightness))
-        # detectionMode = int(input("Select detector mode (1 = lite, 2 = full, 3 = heavy): "))
-        # segmentationTightness = input("Provide segmentation tightness in [0,1] (default .5): ")
+        # Will have to be updated to a cleaner look
+        # if not(os.path.splitext(args.fImg)[1] in acceptedImgTypes and os.path.splitext(args.sImg)[1] in acceptedImgTypes):
+        #     print(f"Unsupported file type detected. {args.fImg} or {args.sImg}.")
+        #     sys.exit(0)
         
-        # Checking if tightness was specified
-        if not segmentationTightness:
-            imageHandler = ImageHandler.ImageHandler(fileNames)
-        else:
-            imageHandler = ImageHandler.ImageHandler(fileNames, float(segmentationTightness))
+        # Tightness now has a default value of 0.5
+        imageHandler = ImageHandler.ImageHandler(self.images, float(self.segmentationTightness))
             
-        
-        imageHandler.loadImages(fileNames)
+        # Assumes that fileNames are handled on passthrough
+        imageHandler.loadImages(self.images)
             
         # Creating landmark handler object using provided data
-        landmarkHandler = PoseLandmarkHandler.PoseLandmarkHandler(imageHandler, detectionMode)
+        landmarkHandler = PoseLandmarkHandler.PoseLandmarkHandler(imageHandler, self.detectionMode)
         
         # Try loading detector module
         print("Loading Detector...")
@@ -75,7 +68,7 @@ class MeasureLess:
         segmentationHandler.segmentImage()
 
         # Measurements from calculated images, in inches
-        measurementHandler = MeasurementHandler.MeasurementHandler(imageHandler, user_height=70)
+        measurementHandler = MeasurementHandler.MeasurementHandler(imageHandler, user_height=self.userHeight)
         measurementHandler.getMeasurements()
 
         # Saving processed images
