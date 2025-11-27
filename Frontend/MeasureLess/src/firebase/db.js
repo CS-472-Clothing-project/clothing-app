@@ -2,7 +2,7 @@ import { doc, setDoc, updateDoc, deleteField } from "firebase/firestore";
 import { auth, db } from "./firebase.js";
 
 // save ONE measurement set to profile
-export const doSaveToProfile = async (measurements: any) => {
+export const doSaveToProfile = async (measurements) => {
     const user = auth.currentUser;
     // if not logged in
     if (!user) throw new Error("No auth");

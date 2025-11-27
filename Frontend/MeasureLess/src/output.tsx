@@ -7,7 +7,7 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import SideMenu from "./components/SideMenu";
-//import { doSaveToProfile, deleteFromProfile } from './firebase/db.js'
+import { doSaveToProfile} from './firebase/db.js';
 import { auth } from './firebase/firebase.js'
 
 export type MeasurementPayload = Partial<{
@@ -139,11 +139,7 @@ export default function Output() {
 
     // Save into localStorage (prototype-only “profile”)
     function handleSaveProfile() {
-        const key = "measureless.profiles";
-        const existing = JSON.parse(localStorage.getItem(key) || "[]") as any[];
-        existing.push({ savedAt: new Date().toISOString(), unit, measurements });
-        localStorage.setItem(key, JSON.stringify(existing));
-        alert("Saved to profile (local storage).");
+        doSaveToProfile(measurements);
     }
 
     // View prior measurements
