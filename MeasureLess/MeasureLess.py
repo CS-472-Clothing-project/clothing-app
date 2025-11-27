@@ -61,7 +61,7 @@ def main(args):
     try:
         landmarkHandler.loadDetector()
     except:
-        logging.exception("And error occurred when loading the detector: ")
+        logging.exception("An error occurred when loading the detector: ")
         
     # On success, uses loaded detector to process the image (generating landmarks)
     print("Detector loaded. Running image detection...")

@@ -26,7 +26,7 @@ class SegmentationHandler:
                                     model_complexity=2,
                                     enable_segmentation=True) as pose:
             for i in range(len(self.imageHandler.segmentedImage)):
-                image[i] = self.imageHandler.cvImage[i]
+                image[i] = self.imageHandler.cvImage[i].copy()
                 processedImage[i] = pose.process(cv2.cvtColor(image[i], cv2.COLOR_BGR2RGB))
             
         # Creates a boolean mask to use to apply the greenscreen
