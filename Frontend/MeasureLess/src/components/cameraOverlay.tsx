@@ -73,7 +73,7 @@ export default function CameraOverlay({ height }: prop) {
             case 4: // step 4, checks all?
                 break;
             case 5:
-                sendToBackend();
+                testWithMockData();
 
                 break;
         }
@@ -151,6 +151,25 @@ export default function CameraOverlay({ height }: prop) {
         }
     }
 
+    const testWithMockData = () => {
+        const mockData = {
+            shoulder: 22.41,
+            chest: 40.71,
+            length: 27.25,
+            short_sleeve: 7.4,
+            long_sleeve: 40.71,
+            hip: 40.71,
+            waist: 40.71,
+            outseam: 37.5,
+            inseam: 27.5,
+        };
+
+        console.log("Using mock data:", mockData);
+
+        navigate('/output', {
+            state: { measurements: mockData, height: height }
+        });
+    };
 
     const sendToBackend = async () => {
         try {
@@ -159,7 +178,11 @@ export default function CameraOverlay({ height }: prop) {
                 return;
             }
             // create formData -> append information
-            console.log(height.toString());
+            if (height === undefined || height === null) {
+                console.error("Height is required");
+                return;
+            }
+            console.log(height);
             const formData = new FormData();
             formData.append("height", height.toString());
             formData.append("bodyType", "male");
@@ -172,11 +195,25 @@ export default function CameraOverlay({ height }: prop) {
                 body: formData,
             });
             const data = await response.json();
-            console.log("Measurements received:", data);
+
+            // Transform backend keys to match frontend expectations
+            const measurements = {
+                shoulder: data.shoulder,
+                chest: data.chest,
+                length: data.length,
+                short_sleeve: data.short_sleeve,
+                long_sleeve: data.long_sleeve,
+                hip: data.hip,
+                waist: data.waist,
+                outseam: data.outseam,
+                inseam: data.inseam,
+            };
+
+            console.log("Measurements received:", measurements);
 
             // go to output 
             navigate('/output', {
-                state: { measurements: data }
+                state: { measurements: data, height: height }
             });
         } catch (err) {
             console.error("Error POST request with images and info", err);

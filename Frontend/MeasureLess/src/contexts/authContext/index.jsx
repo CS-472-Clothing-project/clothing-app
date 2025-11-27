@@ -10,7 +10,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
-    const [userLoggedIn , setUserLoggedIn] = useState(false);
+    const [userLoggedIn, setUserLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
         if (user) {
             setCurrentUser(user); //maybe change to (...user)
             setUserLoggedIn(true);
-        } else{
+        } else {
             setCurrentUser(null);
             setUserLoggedIn(false);
         }
@@ -35,10 +35,11 @@ export function AuthProvider({ children }) {
         loading
     }
 
-    return(
+    return (
         <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     )
 
 }
+
