@@ -29,6 +29,7 @@ def allowed_file(filename):
 # Flask decorator
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
+    print("Request received")
     if request.method == 'POST':
         print("Received POST request")
         print(f"Received height: {request.form.get('height')}")
@@ -50,7 +51,7 @@ def upload_file():
         result = run_from_flask(frontBytes.getvalue(), sideBytes.getvalue(), request.form.get('height'), request.form.get('bodyType'))
         print("Processing complete")
         
-        return jsonify({'message': 'POST request received'}), 200
+        return result, 200
     return jsonify({'message': 'Send a POST request to upload a file'}), 200
 
 # @app.route('/', methods=['GET', 'POST'])
