@@ -25,6 +25,21 @@ Make sure that your preferred version of conda is installed (I recommend minicon
 When requirements are installed, make sure the images you intend to use are in the Measureless directory (at the same level as MeasureLess.py). Also make sure the appropriate mediapipe models are located in `Measureless/models/`. They can be downloaded from [this page.](https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker/index#models)
 \
 \
+Running through Flask:
+\
+Run the following command to launch the Flask server:
+
+`flask --app flaskapp.py run`
+\
+\
+Once both the front and backend server is running, use your browser to navigate to http://localhost:5173 and follow the instructions to enter height, body type, and take the images. Upon hitting "next" on the second image you should see a bunch of output on the flask console and if no errors were thrown, the page should redirect to the results. Currently the results are not properly getting sent back from the backend.
+\
+\
+If you don't want to have to continuously use a webcam to take photos, I recommend using OBS to start a virtual camera with the source set to a stock image of a whole body photo (This will result in only using one photo for both front and side but it's good for checking functionality quickly)
+\
+\
+**NOTE: Running through the command line is currently broken due to ImageHandler expecting bytestreams instead of a filepath**
+
 Once you've ensured the images and models are in the right place, run the command as follows:
 \
 \
