@@ -130,25 +130,25 @@ class MeasurementHandler:
         x,y = point
 
         if direction == "right":
-            for x_pixel in range(x, segmented_image.shape[1]-1, 1):
+            for x_pixel in range(x, segmented_image.shape[1]-3, 1):
                 temp = (x_pixel, y)
                 if self.checkBackground(temp, segmented_image, direction):
                     return temp
 
         elif direction == "left":
-            for x_pixel in range(x, 0, -1):
+            for x_pixel in range(x, 3, -1):
                 temp = (x_pixel, y)
                 if self.checkBackground(temp, segmented_image, direction):
                     return temp
 
         elif direction == "up":
-            for y_pixel in range(y, 0, -1):
+            for y_pixel in range(y, 3, -1):
                 temp = (x, y_pixel)
                 if self.checkBackground(temp, segmented_image, direction):
                     return temp
 
         elif direction == "down":
-            for y_pixel in range(y, segmented_image.shape[0]-1, 1):
+            for y_pixel in range(y, segmented_image.shape[0]-3, 1):
                 temp = (x, y_pixel)
                 if self.checkBackground(temp, segmented_image, direction):
                     return temp
