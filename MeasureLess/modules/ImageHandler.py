@@ -1,5 +1,5 @@
 import cv2
-import numpy
+import numpy as np
 import mediapipe as mp
 import logging
 import sys
@@ -8,9 +8,11 @@ import os
 
 class ImageHandler:
     # TODO: Update members to account for both images
-    def __init__(self, fileNames, imageCount = 2, segTightness=.5, debug=True):
-        # Filenames contains name in index 0 and extension in index 1
-        self.fileData = fileNames
+    def __init__(self, frontImage=None, sideImage=None, imageCount = 2, segTightness=.5, debug=True):
+        print("Image Handler initializing...")
+        # front and side images are bytes type
+        self.frontImage = frontImage
+        self.sideImage = sideImage
         self.imageCount = imageCount
         self.backgroundColor = [4, 244, 4]
         self.segTightness = segTightness
@@ -24,18 +26,27 @@ class ImageHandler:
         self.debug = debug
         
     # Load Image function
-    def loadImages(self, fileNames):
-        # TODO Update this change this
+    def loadImages(self):
+        print("Loading images...")
         try:
-            fullNames = []
-            for i in range(self.imageCount):
-                fullName = self.fileData[0] + f"{str(i)}." + self.fileData[1]
-                self.cvImage[i] = cv2.imread(fullName)
-                
-                tmpImage = self.cvImage[i].copy()
-                self.mpImage[i] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmpImage)
-                self.ndArrayImage[i] = self.mpImage[i].numpy_view()
-                
+            ndBytesFront = np.frombuffer(self.frontImage, np.uint8)
+            ndBytesSide = np.frombuffer(self.sideImage, np.uint8)
+            
+            self.cvImage[0] = cv2.imdecode(ndBytesFront, cv2.IMREAD_COLOR)
+            tmpImage = self.cvImage[0].copy()
+            self.mpImage[0] = mp.Image(image_format=mp.ImageFormat.SRGB, data = tmpImage)
+            self.ndArrayImage[0] = self.mpImage[0].numpy_view()
+            
+            self.cvImage[1] = cv2.imdecode(ndBytesFront, cv2.IMREAD_COLOR)
+            tmpImage = self.cvImage[1].copy()
+            self.mpImage[1] = mp.Image(image_format=mp.ImageFormat.SRGB, data = tmpImage)
+            self.ndArrayImage[1] = self.mpImage[1].numpy_view()
+            
+            print("Saving from loadImages()...")
+            cv2.imwrite("results/frontOutput2.png", self.cvImage[0])
+            cv2.imwrite("results/sideOutput2.png", self.cvImage[1])
+
+
             # # Should be unneeded for now
             # # fileName1 = input("Input first file name with extension: ")
             # # print("Loading image ", fileName1, "...")
