@@ -8,7 +8,7 @@ import os
 
 class ImageHandler:
     # TODO: Update members to account for both images
-    def __init__(self, frontImage, sideImage, imageCount = 2, segTightness=.5, debug=True):
+    def __init__(self, frontImage=None, sideImage=None, imageCount = 2, segTightness=.5, debug=True):
         print("Image Handler initializing...")
         # front and side images are bytes type
         self.frontImage = frontImage
