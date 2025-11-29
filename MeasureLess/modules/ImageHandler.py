@@ -31,13 +31,13 @@ class ImageHandler:
         try:
             ndBytesFront = np.frombuffer(self.frontImage, np.uint8)
             ndBytesSide = np.frombuffer(self.sideImage, np.uint8)
-            
+            # Reading in front image
             self.cvImage[0] = cv2.imdecode(ndBytesFront, cv2.IMREAD_COLOR)
             tmpImage = self.cvImage[0].copy()
             self.mpImage[0] = mp.Image(image_format=mp.ImageFormat.SRGB, data = tmpImage)
             self.ndArrayImage[0] = self.mpImage[0].numpy_view()
-            
-            self.cvImage[1] = cv2.imdecode(ndBytesFront, cv2.IMREAD_COLOR)
+            # Reading in side image
+            self.cvImage[1] = cv2.imdecode(ndBytesSide, cv2.IMREAD_COLOR)
             tmpImage = self.cvImage[1].copy()
             self.mpImage[1] = mp.Image(image_format=mp.ImageFormat.SRGB, data = tmpImage)
             self.ndArrayImage[1] = self.mpImage[1].numpy_view()
@@ -45,23 +45,6 @@ class ImageHandler:
             print("Saving from loadImages()...")
             cv2.imwrite("results/frontOutput2.png", self.cvImage[0])
             cv2.imwrite("results/sideOutput2.png", self.cvImage[1])
-
-
-            # # Should be unneeded for now
-            # # fileName1 = input("Input first file name with extension: ")
-            # # print("Loading image ", fileName1, "...")
-            # self.cvImage[0] = cv2.imread(fileNames[0])
-            # # self.mpImage[0] = mp.Image.create_from_file(fileName1)
-            # tmp_image = self.cvImage[0].copy()
-            # self.mpImage[0] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
-            # self.ndArrayImage[0] = self.mpImage[0].numpy_view()
-        
-            # # fileName2 = input("Input second file name with extension: ")
-            # self.cvImage[1] = cv2.imread(fileNames[1])
-            # tmp_image = self.cvImage[1].copy()
-            # self.mpImage[1] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
-            # # self.mpImage[1] = mp.Image.create_from_file(fileName2)
-            # self.ndArrayImage[1] = self.mpImage[1].numpy_view()
             
         except:
             logging.exception("There was an error when loading the image")
