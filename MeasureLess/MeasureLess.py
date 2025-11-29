@@ -2,12 +2,14 @@ import numpy as np
 import cv2 as cv
 import logging
 import json
+import os
+import sys
 
 from modules import ImageHandler, PoseLandmarkHandler, SegmentationHandler, MeasurementHandler
 # from modules.CLArgsHandler import measureLessArgs # Currently not working
 
 # TODO: Update logic to accept and process 2 images at once. One side profile, one front profile
-# TODO: Update to convert main function into a class
+# TODO: Update to accept either image directories or bytestreams, to ensure command line isn't broken
 class MeasureLess:
     def __init__(self, frontImage, sideImage, userHeight, bodyType, detectionMode = 2, segmentationTightness = 0.5, debug=True):
         # Initialize the variables that will be needed for MeasureLess' pipeline
@@ -22,20 +24,44 @@ class MeasureLess:
         self.debug = debug
     def runMeasureLess(self):
         print("Run the pipeline for measureless")
-
+        isByteStream = False
         # Error checking
-        
-        # Incorporate Matt's code
-        npArrayFront = np.frombuffer(self.fImg, np.uint8)
-        npArraySide = np.frombuffer(self.sImg, np.uint8)
+        # Check if byte streams or if file directories
+        if (isinstance(self.fImg, bytes) and isinstance(self.sImg, bytes)):
+            npArrayFront = np.frombuffer(self.fImg, np.uint8)
+            npArraySide = np.frombuffer(self.sImg, np.uint8)
+            
+            imgFront = cv.imdecode(npArrayFront, cv.IMREAD_COLOR)
+            imgSide = cv.imdecode(npArraySide, cv.IMREAD_COLOR)
 
-        # Read in the images now
-        frontImage = cv.imdecode(npArrayFront, cv.IMREAD_COLOR)
-        sideImage = cv.imdecode(npArraySide, cv.IMREAD_COLOR)
+            try:
+                cv.imwrite("results/frontOutput.png", imgFront)
+                cv.imwrite("results/sideOutput.png", imgSide)
+            except Exception as e:
+                return "There was an error: {e}"
+            isByteStream = True
+        elif(isinstance(self.fImg, str) and isinstance(self.sImg, str)):
+            # Check if images exist, this will only run if
+            if not (os.path.isfile(self.fImg)):
+                print(f"{self.fImg} is not a valid image directory.")
+            if not (os.path.isfile(self.sImg)):
+                print(f"{self.sImg} is not a valid image directory.")
+            isByteStream = False
+        else:
+            print(f"{self.fImg} or {self.sImg} are not valid images")
+            sys.exit()
+
+        # Incorporate Matt's code
+        # npArrayFront = np.frombuffer(self.fImg, np.uint8)
+        # npArraySide = np.frombuffer(self.sImg, np.uint8)
+
+        # # Read in the images now
+        # frontImage = cv.imdecode(npArrayFront, cv.IMREAD_COLOR)
+        # sideImage = cv.imdecode(npArraySide, cv.IMREAD_COLOR)
         
 
         # Tightness now has a default value of 0.5
-        imageHandler = ImageHandler.ImageHandler(frontImage, sideImage)
+        imageHandler = ImageHandler.ImageHandler(self.fImg, self.sImg)
             
         # Assumes that fileNames are handled on passthrough
         imageHandler.loadImages()
