@@ -8,9 +8,9 @@ import os
 
 class ImageHandler:
     # TODO: Update members to account for both images
-    def __init__(self, frontImage=None, sideImage=None, imageCount = 2, segTightness=.5, debug=True):
+    def __init__(self, frontImage=None, sideImage=None, imageCount = 2, segTightness=.5, isByteStream=True, debug=True):
         print("Image Handler initializing...")
-        # front and side images are bytes type
+        # front and side images can either be bytes type or str
         self.frontImage = frontImage
         self.sideImage = sideImage
         self.imageCount = imageCount
@@ -23,32 +23,51 @@ class ImageHandler:
         self.ndArrayImage = [None] * imageCount
         self.mpImage = [None] * imageCount
         self.loadSuccess = False
+        self.isByteStream = isByteStream
         self.debug = debug
         
     # Load Image function
     def loadImages(self):
         print("Loading images...")
-        try:
-            ndBytesFront = np.frombuffer(self.frontImage, np.uint8)
-            ndBytesSide = np.frombuffer(self.sideImage, np.uint8)
-            # Reading in front image
-            self.cvImage[0] = cv2.imdecode(ndBytesFront, cv2.IMREAD_COLOR)
-            tmpImage = self.cvImage[0].copy()
-            self.mpImage[0] = mp.Image(image_format=mp.ImageFormat.SRGB, data = tmpImage)
+        if self.isByteStream:
+            try:
+                ndBytesFront = np.frombuffer(self.frontImage, np.uint8)
+                ndBytesSide = np.frombuffer(self.sideImage, np.uint8)
+                # Reading in front image
+                self.cvImage[0] = cv2.imdecode(ndBytesFront, cv2.IMREAD_COLOR)
+                tmpImage = self.cvImage[0].copy()
+                self.mpImage[0] = mp.Image(image_format=mp.ImageFormat.SRGB, data = tmpImage)
+                self.ndArrayImage[0] = self.mpImage[0].numpy_view()
+                # Reading in side image
+                self.cvImage[1] = cv2.imdecode(ndBytesSide, cv2.IMREAD_COLOR)
+                tmpImage = self.cvImage[1].copy()
+                self.mpImage[1] = mp.Image(image_format=mp.ImageFormat.SRGB, data = tmpImage)
+                self.ndArrayImage[1] = self.mpImage[1].numpy_view()
+                
+                print("Saving from loadImages()...")
+                cv2.imwrite("results/frontOutput2.png", self.cvImage[0])
+                cv2.imwrite("results/sideOutput2.png", self.cvImage[1])
+                
+            except:
+                logging.exception("There was an error when loading the image")
+                sys.exit()
+        else:
+            # Otherwise the passed through parameters are strings and thus image directories
+            # Read in the images as normal
+            self.cvImage[0] = cv2.imread(self.frontImage)
+            tmp_image = self.cvImage[0].copy()
+            self.mpImage[0] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
             self.ndArrayImage[0] = self.mpImage[0].numpy_view()
-            # Reading in side image
-            self.cvImage[1] = cv2.imdecode(ndBytesSide, cv2.IMREAD_COLOR)
-            tmpImage = self.cvImage[1].copy()
-            self.mpImage[1] = mp.Image(image_format=mp.ImageFormat.SRGB, data = tmpImage)
+
+            # Read in side image
+            self.cvImage[1] = cv2.imread(self.sideImage)
+            tmp_image = self.cvImage[1].copy()
+            self.mpImage[1] = mp.Image(image_format=mp.ImageFormat.SRGB, data=tmp_image)
             self.ndArrayImage[1] = self.mpImage[1].numpy_view()
-            
+
             print("Saving from loadImages()...")
             cv2.imwrite("results/frontOutput2.png", self.cvImage[0])
             cv2.imwrite("results/sideOutput2.png", self.cvImage[1])
-            
-        except:
-            logging.exception("There was an error when loading the image")
-            sys.exit()
             
     # Placeholder for later when checking for image type compatibility
     def checkImageType(self):
@@ -75,6 +94,7 @@ class ImageHandler:
                 logging.exception(f"Error while saving image{counter}: ")
                 sys.exit()
     
+    # This code may be useless now
     # For privacy concerns, check if the file exists
     # If it does, delete it
     def __del__(self):

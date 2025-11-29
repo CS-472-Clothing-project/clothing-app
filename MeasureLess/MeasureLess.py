@@ -24,6 +24,8 @@ class MeasureLess:
         self.debug = debug
     def runMeasureLess(self):
         print("Run the pipeline for measureless")
+        # Will be utilized for ImageHandler to determine if the passed through images are
+        # either directories or bytestreams
         isByteStream = False
         # Error checking
         # Check if byte streams or if file directories
@@ -34,34 +36,32 @@ class MeasureLess:
             imgFront = cv.imdecode(npArrayFront, cv.IMREAD_COLOR)
             imgSide = cv.imdecode(npArraySide, cv.IMREAD_COLOR)
 
+            if imgFront is None or imgSide is None:
+                raise ValueError("Image could not be decoded from bytes.")
+
             try:
                 cv.imwrite("results/frontOutput.png", imgFront)
                 cv.imwrite("results/sideOutput.png", imgSide)
+                isByteStream = True
             except Exception as e:
                 return "There was an error: {e}"
-            isByteStream = True
         elif(isinstance(self.fImg, str) and isinstance(self.sImg, str)):
             # Check if images exist, this will only run if
+            # Change to try blocks?
             if not (os.path.isfile(self.fImg)):
-                print(f"{self.fImg} is not a valid image directory.")
+                raise ValueError(f"{self.fImg} is not a valid image directory. Ensure image is located in /MeasureLess")
             if not (os.path.isfile(self.sImg)):
-                print(f"{self.sImg} is not a valid image directory.")
+                raise ValueError(f"{self.sImg} is not a valid image directory. Ensure image is located in /MeasureLess")
+                
             isByteStream = False
         else:
-            print(f"{self.fImg} or {self.sImg} are not valid images")
-            sys.exit()
+            raise ValueError(f"{self.fImg} or {self.sImg} are not valid images")
+            
 
-        # Incorporate Matt's code
-        # npArrayFront = np.frombuffer(self.fImg, np.uint8)
-        # npArraySide = np.frombuffer(self.sImg, np.uint8)
-
-        # # Read in the images now
-        # frontImage = cv.imdecode(npArrayFront, cv.IMREAD_COLOR)
-        # sideImage = cv.imdecode(npArraySide, cv.IMREAD_COLOR)
-        
 
         # Tightness now has a default value of 0.5
-        imageHandler = ImageHandler.ImageHandler(self.fImg, self.sImg)
+        # Updated to handle bytestreams and image directories
+        imageHandler = ImageHandler.ImageHandler(self.fImg, self.sImg, isByteStream=isByteStream)
             
         # Assumes that fileNames are handled on passthrough
         imageHandler.loadImages()
