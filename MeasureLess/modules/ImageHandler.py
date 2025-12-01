@@ -93,17 +93,3 @@ class ImageHandler:
             except:
                 logging.exception(f"Error while saving image{counter}: ")
                 sys.exit()
-    
-    # This code may be useless now
-    # For privacy concerns, check if the file exists
-    # If it does, delete it
-    def __del__(self):
-        if(self.debug == False):
-            # Using the os library, check if the image is present, if it is and debug is False
-            # Delete the image
-	        # Will have to be adjusted or even removed if we figure out to receive images directly from the front end
-            for i in range(len(self.fileNames)):
-                if os.path.isfile(self.fileNames[i]):
-                    os.remove(self.fileNames[i])
-                    print(f"File: {self.fileNames[i]} has been removed.")
-        return

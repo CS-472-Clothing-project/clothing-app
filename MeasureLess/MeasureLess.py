@@ -11,7 +11,7 @@ from modules import ImageHandler, PoseLandmarkHandler, SegmentationHandler, Meas
 # TODO: Update logic to accept and process 2 images at once. One side profile, one front profile
 # TODO: Update to accept either image directories or bytestreams, to ensure command line isn't broken
 class MeasureLess:
-    def __init__(self, frontImage, sideImage, userHeight, bodyType=None, detectionMode = 2, segmentationTightness = 0.5, debug=True):
+    def __init__(self, frontImage, sideImage, userHeight, bodyType=None, detectionMode = 2, segmentationTightness = 0.5, debug=False):
         # Initialize the variables that will be needed for MeasureLess' pipeline
         # Image are passed through as byte
         self.fImg = frontImage
@@ -30,7 +30,7 @@ class MeasureLess:
         # Error checking
         # Check if byte streams or if file directories
         if (isinstance(self.fImg, bytes) and isinstance(self.sImg, bytes)):
-            # Check if the bytestreams passed through
+            # Check if the bytestreams passed through are actually images
             npArrayFront = np.frombuffer(self.fImg, np.uint8)
             npArraySide = np.frombuffer(self.sImg, np.uint8)
             
@@ -62,13 +62,13 @@ class MeasureLess:
 
         # Tightness now has a default value of 0.5
         # Updated to handle bytestreams and image directories
-        imageHandler = ImageHandler.ImageHandler(self.fImg, self.sImg, isByteStream=isByteStream)
+        imageHandler = ImageHandler.ImageHandler(self.fImg, self.sImg, isByteStream=isByteStream, debug=self.debug)
             
         # Assumes that fileNames are handled on passthrough
         imageHandler.loadImages()
             
         # Creating landmark handler object using provided data
-        landmarkHandler = PoseLandmarkHandler.PoseLandmarkHandler(imageHandler)
+        landmarkHandler = PoseLandmarkHandler.PoseLandmarkHandler(imageHandler, debug=self.debug)
         
         # Try loading detector module
         print("Loading Detector...")
@@ -94,7 +94,7 @@ class MeasureLess:
             logging.exception("Error while drawing landmarks: ")
 
         # Creating segmentationHandler object, processing image, and saving the result
-        segmentationHandler = SegmentationHandler.SegmentationHandler(imageHandler)
+        segmentationHandler = SegmentationHandler.SegmentationHandler(imageHandler, self.debug)
         segmentationHandler.segmentImage()
 
         # Measurements from calculated images, in inches
