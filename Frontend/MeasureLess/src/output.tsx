@@ -1,5 +1,5 @@
 // output.tsx
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import SideMenu from "./components/SideMenu";
 import { doSaveToProfile, deleteFromProfile, getMeasurementsFromDB } from './firebase/db.js';
@@ -118,8 +118,24 @@ export default function Output() {
         [location.state]
     );
 
+    const [pastMeasurements, setPastMeasurements] = useState<MeasurementPayload>({});
+
+    useEffect(() => {
+        if (!isAnonymous) {
+            const fetchData = async () => {
+                const data = await getMeasurementsFromDB();
+                setPastMeasurements(data);
+            };
+            fetchData();
+        }
+    }, [isAnonymous]);
+
+
+
+
+
     const [unit, setUnit] = useState<Unit>("in");
-    
+
     // Size suggestor state
     const [selectedVibe, setSelectedVibe] = useState<FitVibe>("regular");
 
@@ -169,16 +185,14 @@ export default function Output() {
 
     function handleSaveProfile() {
         doSaveToProfile(measurements);
+        setPastMeasurements(measurements);
     }
 
-    function handlePriorMeasurements() {
-        //measurements = getMeasurementsFromDB();
-    }
 
     return (
         <div className="min-h-screen w-full flex justify-center bg-[#b4a7d6]">
             <main className="w-full max-w-5xl px-4 md:px-8 py-6 md:py-10 space-y-6">
-                
+
                 {/* Global nav - Only shown on UserInput & Output */}
                 <SideMenu />
 
@@ -206,18 +220,17 @@ export default function Output() {
                 {/* --- SIZE SUGGESTOR SECTION --- */}
                 <section className="w-full bg-white rounded-2xl p-6 shadow-md border-2 border-indigo-50">
                     <h2 className="text-xl font-bold mb-4">AI Size Recommendation</h2>
-                    
+
                     {/* Vibe Selection Tabs */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
                         {VIBES.map((v) => (
                             <button
                                 key={v.id}
                                 onClick={() => setSelectedVibe(v.id)}
-                                className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all ${
-                                    selectedVibe === v.id 
-                                    ? "border-indigo-600 bg-indigo-50 text-indigo-900 shadow-sm" 
+                                className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all ${selectedVibe === v.id
+                                    ? "border-indigo-600 bg-indigo-50 text-indigo-900 shadow-sm"
                                     : "border-gray-200 hover:border-indigo-300 hover:bg-gray-50 text-gray-600"
-                                }`}
+                                    }`}
                             >
                                 <span className="text-2xl mb-1">{v.icon}</span>
                                 <span className="font-semibold">{v.label}</span>
@@ -233,7 +246,7 @@ export default function Output() {
                             {estimateSize(measurements.chest || 0, selectedVibe)}
                         </div>
                         <p className="text-sm opacity-70 max-w-md">
-                            Based on your chest measurement of {formatValue(measurements.chest, unit)} and your preference for a 
+                            Based on your chest measurement of {formatValue(measurements.chest, unit)} and your preference for a
                             <span className="font-bold text-white"> {VIBES.find(v => v.id === selectedVibe)?.label}</span>.
                         </p>
                     </div>
@@ -249,15 +262,24 @@ export default function Output() {
                                 <tr className="text-left border-b">
                                     <th className="pb-2 text-gray-500 font-medium">Measurement Type</th>
                                     <th className="pb-2 text-gray-500 font-medium">Result</th>
+                                    {!isAnonymous &&
+                                        <th className="pb-2 md:pb-3"    >Past Result</th>
+                                    }
                                 </tr>
                             </thead>
                             <tbody className="align-top">
-                                {rows.map((r) => (
-                                    <tr key={r.key} className="border-b last:border-0 hover:bg-gray-50 transition-colors">
-                                        <td className="py-3 font-medium">{r.label}</td>
-                                        <td className="py-3 font-mono text-black">{formatValue(r.value, unit)}</td>
-                                    </tr>
-                                ))}
+                                {rows.map((r) => {
+                                    const past = pastMeasurements?.[r.key];
+                                    return (
+                                        <tr key={r.key} className="border-t">
+                                            <td className="py-2 md:py-3">{r.label}</td>
+                                            <td className="py-2 md:py-3">{formatValue(r.value, unit)}</td>
+                                            {!isAnonymous && (
+                                                <td className="py-2 md:py-3">{formatValue(past, unit)}</td>
+                                            )}
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
@@ -269,11 +291,6 @@ export default function Output() {
                         disabled={isAnonymous}
                         onClick={handleSaveProfile} className="shadow-xl px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer bg-white">
                         Save to profile
-                    </button>
-                    <button
-                        disabled={isAnonymous}
-                        onClick={handlePriorMeasurements} className="shadow-xl px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer bg-white">
-                        Past Measurements
                     </button>
                     <button onClick={handleExportCSV} className="shadow-xl px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer bg-white">
                         Export to CSV
