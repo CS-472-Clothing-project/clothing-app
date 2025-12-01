@@ -56,5 +56,7 @@ def upload_file():
         # result = run_from_flask(frontBytes.getvalue(), sideBytes.getvalue(), request.form.get('height'), request.form.get('bodyType'))
         
         print("Processing complete")
-        return result, 200
+        # Updated measurement handler to return a dictionary that will be turned into a json went sent to the frontend
+        # Ensures no user data is saved directly onto the server
+        return jsonify(result), 200
     return jsonify({'message': 'Send a POST request to upload a file'}), 200

@@ -11,7 +11,7 @@ from modules import ImageHandler, PoseLandmarkHandler, SegmentationHandler, Meas
 # TODO: Update logic to accept and process 2 images at once. One side profile, one front profile
 # TODO: Update to accept either image directories or bytestreams, to ensure command line isn't broken
 class MeasureLess:
-    def __init__(self, frontImage, sideImage, userHeight, bodyType=None, detectionMode = 2, segmentationTightness = 0.5, debug=False):
+    def __init__(self, frontImage, sideImage, userHeight, bodyType=None, detectionMode = 3, segmentationTightness = 0.5, debug=False):
         # Initialize the variables that will be needed for MeasureLess' pipeline
         # Image are passed through as byte
         self.fImg = frontImage
@@ -99,15 +99,20 @@ class MeasureLess:
 
         # Measurements from calculated images, in inches
         # height has to be casted to an integer
-        measurementHandler = MeasurementHandler.MeasurementHandler(imageHandler, user_height=int(self.height))
-        measurementHandler.getMeasurements()
+        measurementHandler = MeasurementHandler.MeasurementHandler(imageHandler, user_height=int(self.height), debug=self.debug)
+        results = measurementHandler.getMeasurements()
 
         # Saving processed images
         if (self.debug):
             imageHandler.saveResults()
 
-        try:
-            with open('results/results.json', 'r') as f:
-                return json.load(f)
-        except Exception as e:
-            return f"There was an error opening the json: {e}"
+        if not results:
+            raise ValueError(f"There was an error with the dictionary. {results}")
+
+        return results
+        
+        # try:
+        #     with open('results/results.json', 'r') as f:
+        #         return json.load(f)
+        # except Exception as e:
+        #     return f"There was an error opening the json: {e}"

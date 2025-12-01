@@ -9,7 +9,7 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
 class PoseLandmarkHandler:
-    def __init__(self, imageHandler, landmarkerMode=3, debug=True):
+    def __init__(self, imageHandler, landmarkerMode=3, debug=False):
         # Set the model path
         if landmarkerMode == 1:
             self.landmarkerPath = 'models/pose_landmarker_lite.task'
@@ -28,6 +28,7 @@ class PoseLandmarkHandler:
     # This needs to be called once
     def loadDetector(self):
         # Setting the options for the pose landmarker and loading the detector
+        print(f"The current path is: {self.landmarkerPath}")
         baseOptions = python.BaseOptions(model_asset_path=self.landmarkerPath)
         options = vision.PoseLandmarkerOptions(
             base_options=baseOptions,

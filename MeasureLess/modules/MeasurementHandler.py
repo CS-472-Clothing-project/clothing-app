@@ -43,7 +43,7 @@ LEFT_FOOT = 31
 RIGHT_FOOT = 32
 
 class MeasurementHandler:
-    def __init__(self, imageHandler, user_height=188, debug=True):
+    def __init__(self, imageHandler, user_height=188, debug=False):
         self.imageHandler = imageHandler
         self.measurementData = None
         self.user_height = user_height # currently in inches for testing
@@ -501,5 +501,7 @@ class MeasurementHandler:
             "hip": hip_measurement,
             "inseam": inseam_measurement,
         }
-
-        self.saveToJSON(measurements)
+        # Update to return dictionary will be changed to json
+        if(self.debug):
+            self.saveToJSON(measurements)
+        return measurements
