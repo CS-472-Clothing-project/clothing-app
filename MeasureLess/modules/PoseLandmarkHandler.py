@@ -28,7 +28,6 @@ class PoseLandmarkHandler:
     # This needs to be called once
     def loadDetector(self):
         # Setting the options for the pose landmarker and loading the detector
-        print(f"The current path is: {self.landmarkerPath}")
         baseOptions = python.BaseOptions(model_asset_path=self.landmarkerPath)
         options = vision.PoseLandmarkerOptions(
             base_options=baseOptions,
