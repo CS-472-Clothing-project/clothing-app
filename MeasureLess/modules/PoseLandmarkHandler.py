@@ -9,7 +9,7 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
 class PoseLandmarkHandler:
-    def __init__(self, imageHandler, landmarkerMode=3, debug=True):
+    def __init__(self, imageHandler, landmarkerMode=3, debug=False):
         # Set the model path
         if landmarkerMode == 1:
             self.landmarkerPath = 'models/pose_landmarker_lite.task'

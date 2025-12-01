@@ -59,13 +59,18 @@ def run_from_flask(frontImage, sideImage, height, bodyType):
     
     # Measurements from calculated images, in inches
     measurementHandler = MeasurementHandler.MeasurementHandler(imageHandler, int(height))
-    measurementHandler.getMeasurements()
+    results = measurementHandler.getMeasurements()
     
     # Saving processed images
     # imageHandler.saveResults()
+
+    if not results:
+            raise ValueError(f"There was an error with the dictionary. {results}")
+
+    return results
     
-    try:
-        with open('results/results.json', 'r') as f:
-            return json.load(f)
-    except Exception as e:
-        return f"There was an error opening the json: {e}"
+    # try:
+    #     with open('results/results.json', 'r') as f:
+    #         return json.load(f)
+    # except Exception as e:
+    #     return f"There was an error opening the json: {e}"
