@@ -38,17 +38,16 @@ Once both the front and backend server is running, use your browser to navigate 
 If you don't want to have to continuously use a webcam to take photos, I recommend using OBS to start a virtual camera with the source set to a stock image of a whole body photo (This will result in only using one photo for both front and side but it's good for checking functionality quickly)
 \
 \
-**NOTE: Running through the command line is currently broken due to ImageHandler expecting bytestreams instead of a filepath**
 
 Once you've ensured the images and models are in the right place, run the command as follows:
 \
 \
-`python3 MeasureLess.py --fImg <frontimage> --sImg <sideimage> --dM <detectorMode> --sT <segTightness>`
+`python3 debugging.py --fImg <frontimage> --sImg <sideimage> --dM <detectorMode> --sT <segTightness>`
 \
 \
 Where everything in <> is the appropriate value, for example:
 \
 \
-`python3 MeasureLess.py --fImg front.jpg --sImg side.jpg --dM 2 --sT .5`
+`python3 debugging.py --fImg front.jpg --sImg side.jpg --dM 2 --sT .5`
 ## Todo:
 * Refactor the backend code so all variables follow consistent naming conventions. Currently both camel case and snake case are used at varying points.

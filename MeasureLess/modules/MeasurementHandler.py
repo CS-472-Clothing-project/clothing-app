@@ -4,6 +4,7 @@ import mediapipe as mp
 import cv2
 import pandas as pd
 import json
+import os
 from math import pi, sqrt
 
 # points for landmarked image
@@ -42,7 +43,7 @@ LEFT_FOOT = 31
 RIGHT_FOOT = 32
 
 class MeasurementHandler:
-    def __init__(self, imageHandler, user_height=188, debug=True):
+    def __init__(self, imageHandler, user_height=188, debug=False):
         self.imageHandler = imageHandler
         self.measurementData = None
         self.user_height = user_height # currently in inches for testing
@@ -62,6 +63,8 @@ class MeasurementHandler:
         print("Measurement Handler Stuff ...")
     
     def saveToJSON(self, measurements):
+        # Check if directory exists
+        os.makedirs("results", exist_ok=True)
         with open('results/results.json', 'w') as file:
             json.dump(measurements, file, indent=4)
         return
@@ -498,5 +501,7 @@ class MeasurementHandler:
             "hip": hip_measurement,
             "inseam": inseam_measurement,
         }
-
-        self.saveToJSON(measurements)
+        # Update to return dictionary will be changed to json
+        if(self.debug):
+            self.saveToJSON(measurements)
+        return measurements
