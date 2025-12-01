@@ -11,14 +11,14 @@ const TakePicture: React.FC = () => {
     const location = useLocation();
     const height = location.state?.height
     return (
-        <div className="min-h-screen w-full flex justify-center">
+        <div className="min-h-screen w-full flex justify-center bg-[#b4a7d6]">
             <main className="w-full max-w-5xl px-4 md:px-8 py-6 md:py-10 space-y-6">
                 <SideMenu />
 
                 <div className="flex-1 flex items-start justify-center pt-2 pb-8">
                     <div className="w-full" style={{ maxWidth: '400px' }}>
                         <div className='relative'>
-                            <div className="rounded-lg shadow-2xl overflow-hidden">
+                            <div className="rounded-lg shadow-2xl overflow-hidden border-2 border-black">
                                 <div className="relative aspect-[9/16] bg-black w-full max-w-[50vh]">
                                     <CameraOverlay height={height} />
                                 </div>

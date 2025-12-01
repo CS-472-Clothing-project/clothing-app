@@ -34,24 +34,24 @@ function UserInput() {
     };
 
     return (
-        <div className="min-h-screen w-full flex justify-center">
+        <div className="min-h-screen w-full flex justify-center bg-[#b4a7d6]">
             <main className="w-full max-w-5xl px-4 md:px-8 py-6 md:py-10 space-y-6">
                 {/* Global nav */}
                 <SideMenu />
 
-                <h1 className="text-2xl font-semibold text-center mb-2">User Input</h1>
+                <h1 className="text-2xl font-semibold text-center mb-2">Your Information</h1>
 
                 {/* Body-type selector */}
                 <div className="text-center mb-6">
-                    <h2 className="text-lg font-semibold mb-4 border-b pb-2">
+                    <h2 className="text-lg font-semibold mb-4 pb-2">
                         Please Choose Your Body Type
                     </h2>
-                    <div className="flex flex-row justify-center items-center gap-8">
+                    <div className="flex flex-row flex-wrap justify-center items-center gap-8 px-4">
                         {/* Male */}
                         <div className="flex flex-col justify-center items-center">
                             <button
                                 onClick={() => { setBodyType("male") }}
-                                className={`w-36 h-36 border rounded-lg flex justify-center items-center ${bodyType === "male"
+                                className={`bg-white w-36 h-36 border rounded-lg flex justify-center items-center ${bodyType === "male"
                                     ? "border-blue-800 w-40 h-40"
                                     : "border-black hover:border-blue-800 hover:w-40 hover:h-40 hover:cursor-pointer"
                                     }`}
@@ -65,7 +65,7 @@ function UserInput() {
                         <div className="flex flex-col justify-center items-center">
                             <button
                                 onClick={() => setBodyType("other")}
-                                className={`w-36 h-36 border rounded-lg flex justify-center items-center ${bodyType === "other"
+                                className={`bg-white w-36 h-36 border rounded-lg flex justify-center items-center ${bodyType === "other"
                                     ? "border-blue-800 w-40 h-40"
                                     : "border-black hover:border-blue-800 hover:w-40 hover:h-40 hover:cursor-pointer"
                                     }`}
@@ -79,7 +79,7 @@ function UserInput() {
                         <div className="flex flex-col justify-center items-center">
                             <button
                                 onClick={() => setBodyType("female")}
-                                className={`w-36 h-36 border rounded-lg flex justify-center items-center ${bodyType === "female"
+                                className={`bg-white w-36 h-36 border rounded-lg flex justify-center items-center ${bodyType === "female"
                                     ? "border-blue-800 w-40 h-40"
                                     : "border-black hover:border-blue-800 hover:w-40 hover:h-40 hover:cursor-pointer"
                                     }`}
@@ -93,7 +93,7 @@ function UserInput() {
 
                 {/* Height wheel picker */}
                 <div className="text-center mb-6">
-                    <h2 className="text-lg font-semibold mb-4 border-b pb-2">
+                    <h2 className="text-lg font-semibold mb-4 pb-2">
                         Please Enter your Height
                     </h2>
                     <div className="flex flex-row justify-center">

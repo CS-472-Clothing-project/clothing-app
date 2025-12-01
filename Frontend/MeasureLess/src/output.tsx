@@ -148,7 +148,7 @@ export default function Output() {
     }
 
     return (
-        <div className="min-h-screen w-full flex justify-center">
+        <div className="min-h-screen w-full flex justify-center bg-[#b4a7d6]">
             <main className="w-full max-w-5xl px-4 md:px-8 py-6 md:py-10 space-y-6">
                 <SideMenu />
 
@@ -157,7 +157,7 @@ export default function Output() {
                     <h1 className="text-2xl md:text-3xl font-bold">Measurements</h1>
                     <div className="flex items-center gap-2">
                         <span className="mr-1 text-sm opacity-70">Units:</span>
-                        <div className="inline-flex rounded-full border overflow-hidden">
+                        <div className="inline-flex rounded-full border overflow-hidden bg-white shadow-sm">
                             <button
                                 className={`px-3 py-1 text-sm hover:cursor-pointer ${unit === "in" ? "bg-foreground text-background" : ""}`}
                                 onClick={() => setUnit("in")}
@@ -175,7 +175,7 @@ export default function Output() {
                 </header>
 
                 {/* Results table */}
-                <section className="w-full border rounded-2xl p-4 md:p-6">
+                <section className="w-full border rounded-2xl p-4 md:p-6 bg-white shadow-md">
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm md:text-base">
                             <thead>
@@ -200,18 +200,18 @@ export default function Output() {
                 <div className="flex flex-col md:flex-row gap-3 md:gap-4 md:justify-center">
                     <button
                         disabled={isAnonymous}
-                        onClick={handleSaveProfile} className="px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer">
+                        onClick={handleSaveProfile} className="shadow-xl px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer bg-white">
                         Save to profile
                     </button>
                     <button
                         disabled={isAnonymous}
-                        onClick={handlePriorMeasurements} className="px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer">
+                        onClick={handlePriorMeasurements} className="shadow-xl px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer bg-white">
                         Past Measurements
                     </button>
-                    <button onClick={handleExportCSV} className="px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer">
+                    <button onClick={handleExportCSV} className="shadow-xl px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer bg-white">
                         Export to CSV
                     </button>
-                    <Link to="/TakePicture" className="px-6 py-2 rounded-full border hover:opacity-90 text-center">
+                    <Link to="/TakePicture" className="shadow-xl px-6 py-2 rounded-full border hover:opacity-90 text-center bg-white">
                         Retake Photos
                     </Link>
                 </div>

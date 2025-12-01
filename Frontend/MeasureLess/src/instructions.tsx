@@ -46,7 +46,7 @@ export default function Instructions() {
     );
 
     return (
-        <div className="min-h-screen w-full flex justify-center">
+        <div className="min-h-screen w-full flex justify-center bg-[#b4a7d6]">
             <main className="w-full max-w-5xl px-4 md:px-8 py-6 md:py-10 space-y-6">
                 {/* Global nav */}
                 <SideMenu />
@@ -104,7 +104,7 @@ export default function Instructions() {
                     <div className="pt-3">
                         {/* Link to the camera page */}
                         <a onClick={navi}
-                            className="inline-block px-5 py-2 rounded-lg bg-foreground text-background">
+                            className="inline-block px-5 py-2 rounded-lg bg-foreground text-background hover:cursor-pointer">
                             Get Measured
                         </a>
                     </div>
