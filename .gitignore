@@ -224,7 +224,6 @@ __marimo__/
 *.mp4
 
 # Mediapipe models
-*.task
 *.tflite
 
 # Result images
