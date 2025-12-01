@@ -9,6 +9,7 @@ export default function CameraOverlay({ height }: prop) {
     const videoRef = useRef<HTMLVideoElement | null>(null); // ref to video
     const canvasRef = useRef<HTMLCanvasElement | null>(null); // ref to canvas to convert to img
     const [stream, setStream] = useState<MediaStream | null>(null); // MediaStream 
+    const streamRef = useRef<MediaStream | null>(null); // keep latest stream
 
     const [frontBlob, setFrontBlob] = useState<Blob | null>(null); // front blob for sending
     const [frontUrl, setFrontUrl] = useState<string>(""); // front url for displaying
@@ -64,17 +65,18 @@ export default function CameraOverlay({ height }: prop) {
                 setPhotoType('front')
                 break;
             case 2: // step 2
-
+                stopCamera();
                 break;
             case 3: // step 3 
                 startCamera()
                 setPhotoType('side')
                 break;
             case 4: // step 4, checks all?
+                stopCamera();
                 break;
             case 5:
+                stopCamera();
                 sendToBackend();
-
                 break;
         }
 
@@ -84,6 +86,10 @@ export default function CameraOverlay({ height }: prop) {
     // start camera
     const startCamera = async () => {
         try {
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(t => t.stop());
+                streamRef.current = null;
+            }
             // uses mediaDevices to use camera
             const mediaStream = await navigator.mediaDevices.getUserMedia({
                 video: {
@@ -94,7 +100,8 @@ export default function CameraOverlay({ height }: prop) {
                 audio: false
             });
             /* use the stream */
-            setStream(mediaStream); // stores stream in state
+            streamRef.current = mediaStream;
+            setStream(mediaStream);
 
             // connect stream to video
             if (videoRef.current)
@@ -109,9 +116,15 @@ export default function CameraOverlay({ height }: prop) {
 
     // stops camera
     const stopCamera = () => {
-        if (stream) { // iterate through stream
-            stream.getTracks().forEach(track => track.stop());
-            setStream(null); // clears stream
+        const ref = streamRef.current ?? stream; // prefer ref, fallback to state
+        if (ref) {
+            ref.getTracks().forEach(track => track.stop());
+        }
+        streamRef.current = null;
+        setStream(null);
+
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
         }
     }
 
