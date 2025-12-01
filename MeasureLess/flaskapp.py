@@ -1,4 +1,5 @@
 import os
+import MeasureLess
 from flask import Flask, flash, request, jsonify
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
@@ -47,9 +48,13 @@ def upload_file():
         
         print("front image type: ", type(front_image.stream.read()))
         print("side image type: ", type(side_image.stream.read()))
+        # MeasureLess.py variant, creates an instance of the MeasureLess class and runs the pipeline
+        ml = MeasureLess.MeasureLess(frontBytes.getvalue(), sideBytes.getvalue(), request.form.get('height'), request.form.get('bodyType'))
+        result = ml.runMeasureLess()
         
-        result = run_from_flask(frontBytes.getvalue(), sideBytes.getvalue(), request.form.get('height'), request.form.get('bodyType'))
+        # FlaskRunner.py variant 
+        # result = run_from_flask(frontBytes.getvalue(), sideBytes.getvalue(), request.form.get('height'), request.form.get('bodyType'))
+        
         print("Processing complete")
-        
         return result, 200
     return jsonify({'message': 'Send a POST request to upload a file'}), 200
