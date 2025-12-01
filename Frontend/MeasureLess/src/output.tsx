@@ -4,7 +4,7 @@
 // - "Save to profile" stores a snapshot in localStorage (prototype only)
 // - "Export to CSV" downloads a simple CSV of the current table
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import SideMenu from "./components/SideMenu";
 import { doSaveToProfile, deleteFromProfile, getMeasurementsFromDB } from './firebase/db.js';
@@ -89,6 +89,21 @@ export default function Output() {
         [location.state]
     );
 
+    const [pastMeasurements, setPastMeasurements] = useState<MeasurementPayload>({});
+
+    useEffect(() => {
+        if (!isAnonymous) {
+            const fetchData = async () => {
+                const data = await getMeasurementsFromDB();
+                setPastMeasurements(data);
+            };
+            fetchData();
+        }
+    }, [isAnonymous]);
+
+
+
+
     const [unit, setUnit] = useState<Unit>("in");
 
     // Build table rows in display order
@@ -140,11 +155,7 @@ export default function Output() {
     // Save into localStorage (prototype-only “profile”)
     function handleSaveProfile() {
         doSaveToProfile(measurements);
-    }
-
-    // View prior measurements
-    function handlePriorMeasurements() {
-        //measurements = getMeasurementsFromDB();
+        setPastMeasurements(measurements);
     }
 
     return (
@@ -182,16 +193,26 @@ export default function Output() {
                                 <tr className="text-left">
                                     <th className="pb-2 md:pb-3">Measurement Type</th>
                                     <th className="pb-2 md:pb-3">Result</th>
+                                    {!isAnonymous &&
+                                        <th className="pb-2 md:pb-3"    >Past Result</th>
+                                    }
                                 </tr>
                             </thead>
                             <tbody className="align-top">
-                                {rows.map((r) => (
-                                    <tr key={r.key} className="border-t">
-                                        <td className="py-2 md:py-3">{r.label}</td>
-                                        <td className="py-2 md:py-3">{formatValue(r.value, unit)}</td>
-                                    </tr>
-                                ))}
+                                {rows.map((r) => {
+                                    const past = pastMeasurements?.[r.key];
+                                    return (
+                                        <tr key={r.key} className="border-t">
+                                            <td className="py-2 md:py-3">{r.label}</td>
+                                            <td className="py-2 md:py-3">{formatValue(r.value, unit)}</td>
+                                            {!isAnonymous && (
+                                                <td className="py-2 md:py-3">{formatValue(past, unit)}</td>
+                                            )}
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
+
                         </table>
                     </div>
                 </section>
@@ -202,11 +223,6 @@ export default function Output() {
                         disabled={isAnonymous}
                         onClick={handleSaveProfile} className="shadow-xl px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer bg-white">
                         Save to profile
-                    </button>
-                    <button
-                        disabled={isAnonymous}
-                        onClick={handlePriorMeasurements} className="shadow-xl px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer bg-white">
-                        Past Measurements
                     </button>
                     <button onClick={handleExportCSV} className="shadow-xl px-6 py-2 rounded-full border hover:opacity-90 hover:cursor-pointer bg-white">
                         Export to CSV

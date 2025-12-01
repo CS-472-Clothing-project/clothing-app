@@ -73,7 +73,7 @@ export default function CameraOverlay({ height }: prop) {
             case 4: // step 4, checks all?
                 break;
             case 5:
-                testWithMockData();
+                sendToBackend();
 
                 break;
         }
