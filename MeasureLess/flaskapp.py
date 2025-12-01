@@ -49,10 +49,10 @@ def upload_file():
         print("front image type: ", type(front_image.stream.read()))
         print("side image type: ", type(side_image.stream.read()))
         # MeasureLess.py variant
-        # ml = MeasureLess.MeasureLess(frontBytes.getvalue(), sideBytes.getvalue(), request.form.get('height'), request.form.get('bodyType'))
-        # result = ml.runMeasureLess()
-        result = run_from_flask(frontBytes.getvalue(), sideBytes.getvalue(), request.form.get('height'), request.form.get('bodyType'))
+        ml = MeasureLess.MeasureLess(frontBytes.getvalue(), sideBytes.getvalue(), request.form.get('height'), request.form.get('bodyType'))
+        result = ml.runMeasureLess()
+        # result = run_from_flask(frontBytes.getvalue(), sideBytes.getvalue(), request.form.get('height'), request.form.get('bodyType'))
         print("Processing complete")
-        
+        print(result)
         return result, 200
     return jsonify({'message': 'Send a POST request to upload a file'}), 200

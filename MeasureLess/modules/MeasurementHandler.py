@@ -4,6 +4,7 @@ import mediapipe as mp
 import cv2
 import pandas as pd
 import json
+import os
 from math import pi, sqrt
 
 # points for landmarked image
@@ -62,6 +63,8 @@ class MeasurementHandler:
         print("Measurement Handler Stuff ...")
     
     def saveToJSON(self, measurements):
+        # Check if directory exists
+        os.makedirs("results", exist_ok=True)
         with open('results/results.json', 'w') as file:
             json.dump(measurements, file, indent=4)
         return

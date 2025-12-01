@@ -11,7 +11,7 @@ from modules import ImageHandler, PoseLandmarkHandler, SegmentationHandler, Meas
 # TODO: Update logic to accept and process 2 images at once. One side profile, one front profile
 # TODO: Update to accept either image directories or bytestreams, to ensure command line isn't broken
 class MeasureLess:
-    def __init__(self, frontImage, sideImage, userHeight, bodyType, detectionMode = 2, segmentationTightness = 0.5, debug=True):
+    def __init__(self, frontImage, sideImage, userHeight, bodyType=None, detectionMode = 2, segmentationTightness = 0.5, debug=True):
         # Initialize the variables that will be needed for MeasureLess' pipeline
         # Image are passed through as byte
         self.fImg = frontImage
@@ -23,13 +23,14 @@ class MeasureLess:
         self.sT = segmentationTightness
         self.debug = debug
     def runMeasureLess(self):
-        print("Run the pipeline for measureless")
+        print("Running the pipeline for measureless")
         # Will be utilized for ImageHandler to determine if the passed through images are
         # either directories or bytestreams
         isByteStream = False
         # Error checking
         # Check if byte streams or if file directories
         if (isinstance(self.fImg, bytes) and isinstance(self.sImg, bytes)):
+            # Check if the bytestreams passed through
             npArrayFront = np.frombuffer(self.fImg, np.uint8)
             npArraySide = np.frombuffer(self.sImg, np.uint8)
             
@@ -97,7 +98,8 @@ class MeasureLess:
         segmentationHandler.segmentImage()
 
         # Measurements from calculated images, in inches
-        measurementHandler = MeasurementHandler.MeasurementHandler(imageHandler, user_height=self.userHeight)
+        # height has to be casted to an integer
+        measurementHandler = MeasurementHandler.MeasurementHandler(imageHandler, user_height=int(self.height))
         measurementHandler.getMeasurements()
 
         # Saving processed images

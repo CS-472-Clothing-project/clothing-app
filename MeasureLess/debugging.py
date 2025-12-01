@@ -12,9 +12,10 @@ def main(args):
         print(f"Unsupported file extension: {args.iExt}. Supported extensions are: {acceptedImgTypes}")
         sys.exit(0)
     # Make the ml class
-    ml = MeasureLess.MeasureLess()
+    ml = MeasureLess.MeasureLess(args.fImg, args.sImg, args.uH, detectionMode=args.dM, 
+                                 segmentationTightness=args.sT, debug=True)
     # Run the pipeline
-    ml.runMeasureLess()
+    result = ml.runMeasureLess()
     
 
 
