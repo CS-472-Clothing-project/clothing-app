@@ -225,7 +225,7 @@ class MeasurementHandler:
 
         # Calculate pixel distance between both front points
         front_view_hip_dist = np.linalg.norm(np.array(front_right_hip_px) - np.array(front_left_hip_px)) # Front view pixel distance
-        cv2.line(self.front_segmented_image, front_right_hip_px, front_left_hip_px, (255,0,0), 5) 
+        # cv2.line(self.front_segmented_image, front_right_hip_px, front_left_hip_px, (255,0,0), 5) 
 
         # ----- Side Image Logic ------ (really the same as front)
         side_right_hip = self.getPixel(RIGHT_HIP, self.side_landmarks)
@@ -309,7 +309,7 @@ class MeasurementHandler:
         side_hip = self.getPixel(LEFT_HIP, self.side_landmarks)
         # cv2.line(self.side_segmented_image, side_shoulder, side_hip, (255,0,0), 5)
 
-        side_mid_chest = self.getPointFromDistance(side_shoulder, side_hip, .25)
+        side_mid_chest = self.getPointFromDistance(side_shoulder, side_hip, .4)
         # cv2.circle(self.side_segmented_image, side_mid_chest, 20, color=(255,0,50), thickness=-1)
 
         side_right_chest = self.getPointFromBackground(side_mid_chest, self.side_segmented_image, "right")
