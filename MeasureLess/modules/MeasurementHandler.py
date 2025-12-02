@@ -217,11 +217,11 @@ class MeasurementHandler:
         """
         # ----- Front Image Logic ------
         # Convert landmarks to real pixels we can use
-        front_right_hip = self.getPixel(LEFT_HIP, self.front_landmarks)
-        front_left_hip = self.getPixel(LEFT_HIP, self.front_landmarks)
+        front_right_hip_px = self.getPixel(LEFT_HIP, self.front_landmarks)
+        front_left_hip_px = self.getPixel(LEFT_HIP, self.front_landmarks)
 
-        front_right_hip_px = self.getPointFromBackground(front_right_hip, self.front_segmented_image, direction="right")
-        front_left_hip_px = self.getPointFromBackground(front_left_hip, self.front_segmented_image, direction="left")
+        # front_right_hip_px = self.getPointFromBackground(front_right_hip, self.front_segmented_image, direction="right")
+        # front_left_hip_px = self.getPointFromBackground(front_left_hip, self.front_segmented_image, direction="left")
 
         # Calculate pixel distance between both front points
         front_view_hip_dist = np.linalg.norm(np.array(front_right_hip_px) - np.array(front_left_hip_px)) # Front view pixel distance
@@ -427,8 +427,8 @@ class MeasurementHandler:
 
         # cv2.line(self.front_segmented_image, front_right_shoulder, front_right_hip, color=(0,0,255))
       
-        front_right_waist = self.getPointFromBackground(front_right_waist, self.front_segmented_image, "left")
-        front_left_waist = self.getPointFromBackground(front_left_waist, self.front_segmented_image, "right")
+        # front_right_waist = self.getPointFromBackground(front_right_waist, self.front_segmented_image, "left")
+        # front_left_waist = self.getPointFromBackground(front_left_waist, self.front_segmented_image, "right")
         # cv2.circle(self.front_segmented_image, front_right_waist, 20, color=(255,0,50), thickness=-1)
         # cv2.circle(self.front_segmented_image, front_left_waist, 20, color=(255,0,255), thickness=-1)
 
