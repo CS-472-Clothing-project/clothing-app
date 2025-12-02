@@ -14,7 +14,7 @@ export default defineConfig(() => ({
         host: true,
         port: 5173,
         allowedHosts: [
-            "clothing-app-2n6a.onrender.com" // allow your Render host
+            "clothing-app-2n6a.onrender.com"
         ],
     },
 }));

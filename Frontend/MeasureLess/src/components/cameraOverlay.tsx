@@ -205,7 +205,7 @@ export default function CameraOverlay({ height, onComplete }: prop) {
             formData.append("frontImage", frontBlob, "front.jpg")
             formData.append("sideImage", sideBlob, "side.jpg")
             // post request
-            const response = await fetch("clothing-app-wuff:5000:wq", { //figure out port
+            const response = await fetch("clothing-app-wuff:5000", { //figure out port
                 method: "POST",
                 body: formData,
             });
