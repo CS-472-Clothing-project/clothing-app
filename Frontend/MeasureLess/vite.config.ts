@@ -10,8 +10,5 @@ export default defineConfig({
         alias: {
             "@": path.resolve(__dirname, "./src"),
         },
-    allowedHosts: [
-        'clothing-app-2n6a.onrender.com'
-        ],
     },
 })
