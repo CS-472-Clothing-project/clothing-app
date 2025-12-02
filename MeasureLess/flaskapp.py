@@ -1,10 +1,12 @@
+import io
 import os
-import MeasureLess
-from flask import Flask, flash, request, jsonify
-from werkzeug.utils import secure_filename
+
+from flask import Flask, flash, jsonify, request
 from flask_cors import CORS
 from FlaskRunner import run_from_flask
-import io
+from werkzeug.utils import secure_filename
+
+import MeasureLess
 
 # Sets the directory from the __file__ variable to generate a universal absolute path for uploads
 # Will likely change functionality to not save the image and just accept the object itself
@@ -21,7 +23,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # CORS (cross origin resource sharing) enables locally hosted react frontend
 # to talk to this app (may not be needed in final implementation)
-CORS(app)
+CORS(app, origins=[
+        "https://clothing-app-2n6a.onrender.com",
+        "http://clothing-app-2n6a.onrender.com"
+    ])
 
 # Checks for valid filetype by extension
 def allowed_file(filename):

@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
-export default defineConfig({
+export default defineConfig(() => ({
     plugins: [react(), tailwindcss()],
     resolve: {
         alias: {
@@ -12,9 +12,17 @@ export default defineConfig({
     },
     server: {
         host: true,
-        hmr: {
-            host: "clothing-app-2n6a.onrender.com",
-        },
+        port: 5173,
+        allowedHosts: [
+            "clothing-app-2n6a.onrender.com"
+        ],
+        proxy: {
+            '/api': {
+                target: 'clothing-app-wuff:5000',
+                changeOrigin: true,
+                secure: false,
+            }
+        }
     },
-});
+}));
 
