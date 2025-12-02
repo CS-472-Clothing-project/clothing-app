@@ -16,6 +16,13 @@ export default defineConfig(() => ({
         allowedHosts: [
             "clothing-app-2n6a.onrender.com"
         ],
+        proxy: {
+            '/api': {
+                target: 'clothing-app-wuff:5000',
+                changeOrigin: true,
+                secure: false,
+            }
+        }
     },
 }));
 

@@ -43,7 +43,7 @@ LEFT_FOOT = 31
 RIGHT_FOOT = 32
 
 class MeasurementHandler:
-    def __init__(self, imageHandler, user_height=188, debug=False):
+    def __init__(self, imageHandler,user_height, debug=False):
         self.imageHandler = imageHandler
         self.measurementData = None
         self.user_height = user_height # currently in inches for testing
@@ -64,6 +64,7 @@ class MeasurementHandler:
     
     def saveToJSON(self, measurements):
         # Check if directory exists
+        print("Saving measurements to 'results/results.json'")
         os.makedirs("results", exist_ok=True)
         with open('results/results.json', 'w') as file:
             json.dump(measurements, file, indent=4)
@@ -158,8 +159,6 @@ class MeasurementHandler:
 
     # Find the middle pixel between both feet for a better height measurement
     def getMiddlePx(self, p1, p2):
-        p1 = self.getPixel(LEFT_FOOT, self.front_landmarks)
-        p2 = self.getPixel(RIGHT_FOOT, self.front_landmarks)
         
         middle_px = (
                 int((p1[0] + p2[0]) / 2),
@@ -218,7 +217,7 @@ class MeasurementHandler:
         """
         # ----- Front Image Logic ------
         # Convert landmarks to real pixels we can use
-        front_right_hip = self.getPixel(RIGHT_HIP, self.front_landmarks)
+        front_right_hip = self.getPixel(LEFT_HIP, self.front_landmarks)
         front_left_hip = self.getPixel(LEFT_HIP, self.front_landmarks)
 
         front_right_hip_px = self.getPointFromBackground(front_right_hip, self.front_segmented_image, direction="right")
@@ -226,7 +225,7 @@ class MeasurementHandler:
 
         # Calculate pixel distance between both front points
         front_view_hip_dist = np.linalg.norm(np.array(front_right_hip_px) - np.array(front_left_hip_px)) # Front view pixel distance
-        # cv2.line(self.front_segmented_image, front_right_hip_px, front_left_hip_px, (255,0,0), 5) 
+        cv2.line(self.front_segmented_image, front_right_hip_px, front_left_hip_px, (255,0,0), 5) 
 
         # ----- Side Image Logic ------ (really the same as front)
         side_right_hip = self.getPixel(RIGHT_HIP, self.side_landmarks)
@@ -237,6 +236,8 @@ class MeasurementHandler:
 
         side_left_hip = self.getPointFromBackground(side_left_hip, self.side_segmented_image, direction="left")
         # cv2.circle(self.side_segmented_image, side_left_hip, 20, color=(255,0,50), thickness=-1)
+
+        # cv2.line(self.side_segmented_image, side_right_hip, side_left_hip, (255,0,0), 5) 
 
         # Calculate side view distance 
         side_view_hip_dist = np.linalg.norm(np.array(side_right_hip) - np.array(side_left_hip))
@@ -294,16 +295,21 @@ class MeasurementHandler:
         fr_chest = self.getPointFromDistance(front_right_shoulder,front_right_hip,.3) # I'm using ~30% for a general rule of thumb
         # cv2.circle(self.front_segmented_image, fr_chest, 15, color=(255,0,50), thickness=-1)
         fl_chest = self.getPointFromDistance(front_left_shoulder,front_left_hip,.3) 
-        #cv2.circle(self.front_segmented_image, fl_chest, 15, color=(255,0,50), thickness=-1)
+        # cv2.circle(self.front_segmented_image, fl_chest, 15, color=(255,255,50), thickness=-1)
+
+        fr_chest = self.getPointFromBackground(fr_chest, self.front_segmented_image, "left")
+        fl_chest = self.getPointFromBackground(fl_chest, self.front_segmented_image, "right")
+        # cv2.circle(self.front_segmented_image, fr_chest, 15, color=(255,0,50), thickness=-1)
+        # cv2.circle(self.front_segmented_image, fl_chest, 15, color=(255,255,50), thickness=-1)
 
         front_dist = np.linalg.norm(np.array(fr_chest) - np.array(fl_chest)) 
 
         # ---- SIDE LOGIC -----
-        side_shoulder = self.getPixel(RIGHT_SHOULDER, self.side_landmarks)
-        side_hip = self.getPixel(RIGHT_HIP, self.side_landmarks)
+        side_shoulder = self.getPixel(LEFT_SHOULDER, self.side_landmarks)
+        side_hip = self.getPixel(LEFT_HIP, self.side_landmarks)
         # cv2.line(self.side_segmented_image, side_shoulder, side_hip, (255,0,0), 5)
 
-        side_mid_chest = self.getPointFromDistance(side_shoulder, side_hip, .3)
+        side_mid_chest = self.getPointFromDistance(side_shoulder, side_hip, .25)
         # cv2.circle(self.side_segmented_image, side_mid_chest, 20, color=(255,0,50), thickness=-1)
 
         side_right_chest = self.getPointFromBackground(side_mid_chest, self.side_segmented_image, "right")
@@ -349,6 +355,7 @@ class MeasurementHandler:
         b = b/2
 
         return self.getEllipseCircum(a,b) / 2
+        # return front_dist * self.scale
 
     def getShortSleeve(self):
         # ---- Front Logic -----
@@ -430,7 +437,7 @@ class MeasurementHandler:
         # ----- Side Logic -----
         side_shoulder = self.getPixel(LEFT_SHOULDER, self.side_landmarks)
         side_hip = self.getPixel(LEFT_HIP, self.side_landmarks)
-        side_waist = self.getPointFromDistance(side_shoulder, side_hip, .6)
+        side_waist = self.getPointFromDistance(side_shoulder, side_hip, .65)
         side_right_waist = self.getPointFromBackground(side_waist, self.side_segmented_image, "right")
         side_left_waist = self.getPointFromBackground(side_waist, self.side_segmented_image, "left")
 
@@ -468,6 +475,32 @@ class MeasurementHandler:
 
         return self.getEllipseCircum(a,b) / 2
 
+    def getOutseamMeasurement(self):
+        front_right_shoulder = self.getPixel(RIGHT_SHOULDER, self.front_landmarks)
+        front_right_hip = self.getPixel(RIGHT_HIP, self.front_landmarks)
+        front_right_waist = self.getPointFromDistance(front_right_shoulder, front_right_hip, .65)
+        # front_right_waist = self.getPointFromBackground(front_right_waist, self.front_segmented_image, "left")
+        # cv2.circle(self.front_segmented_image, front_right_waist, 30, color=(100,0,100), thickness=-1)
+
+        front_right_ankle = self.getPixel(RIGHT_FOOT, self.front_landmarks)
+
+        front_dist = np.linalg.norm(np.array(front_right_waist) - np.array(front_right_ankle))
+
+        side_knee = self.getPixel(LEFT_KNEE, self.side_landmarks)
+        right_side_knee = self.getPointFromBackground(side_knee, self.side_segmented_image, "right")
+        left_side_knee = self.getPointFromBackground(side_knee, self.side_segmented_image, "left")
+
+        side_dist = np.linalg.norm(np.array(right_side_knee) - np.array(left_side_knee))
+
+        # -- Ellipse logic --
+        a = front_dist * self.scale
+        b = side_dist * self.scale
+
+        a = a/2
+        b = b/2
+        return self.getEllipseCircum(a,b) / 2
+        # return front_dist * self.scale
+
     def getMeasurements(self):
 
         self.getMeasurementScale()
@@ -490,6 +523,8 @@ class MeasurementHandler:
         hip_measurement = round(self.getHipMeasurement(),2)
         #Inseam 
         inseam_measurement = round(self.getInseamMeasurement(),2)
+        #Outseam
+        outseam_measurement = round(self.getOutseamMeasurement(),2)
 
         measurements = {
             "chest": chest_measurement,
@@ -500,6 +535,7 @@ class MeasurementHandler:
             "waist": waist_measurement,
             "hip": hip_measurement,
             "inseam": inseam_measurement,
+            "outseam": outseam_measurement
         }
         # Update to return dictionary will be changed to json
         if(self.debug):
