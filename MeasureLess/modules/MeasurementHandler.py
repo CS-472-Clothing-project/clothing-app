@@ -297,8 +297,8 @@ class MeasurementHandler:
         fl_chest = self.getPointFromDistance(front_left_shoulder,front_left_hip,.3) 
         # cv2.circle(self.front_segmented_image, fl_chest, 15, color=(255,255,50), thickness=-1)
 
-        fr_chest = self.getPointFromBackground(fr_chest, self.front_segmented_image, "left")
-        fl_chest = self.getPointFromBackground(fl_chest, self.front_segmented_image, "right")
+        # fr_chest = self.getPointFromBackground(fr_chest, self.front_segmented_image, "left")
+        # fl_chest = self.getPointFromBackground(fl_chest, self.front_segmented_image, "right")
         # cv2.circle(self.front_segmented_image, fr_chest, 15, color=(255,0,50), thickness=-1)
         # cv2.circle(self.front_segmented_image, fl_chest, 15, color=(255,255,50), thickness=-1)
 
