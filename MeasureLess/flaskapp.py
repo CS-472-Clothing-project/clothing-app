@@ -23,10 +23,17 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # CORS (cross origin resource sharing) enables locally hosted react frontend
 # to talk to this app (may not be needed in final implementation)
-CORS(app, origins=[
-        "https://clothing-app-2n6a.onrender.com",
-        "http://clothing-app-2n6a.onrender.com"
-    ])
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "https://clothing-app-2n6a.onrender.com",
+            "http://clothing-app-2n6a.onrender.com"
+        ],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
+
 
 # Checks for valid filetype by extension
 def allowed_file(filename):
