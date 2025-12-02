@@ -2,7 +2,7 @@ import { useState } from "react";
 import { 
     FaCamera, FaTshirt, FaRulerCombined, FaUserShield, 
     FaMobileAlt, FaAngleDoubleUp, FaArrowLeft, FaSignInAlt, 
-    FaUserCircle, FaHistory, FaSignOutAlt, FaCheckCircle, FaLightbulb 
+    FaUserCircle, FaHistory, FaSignOutAlt, FaCheckCircle, FaLightbulb, FaRulerHorizontal
 } from "react-icons/fa";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "./contexts/authContext";
@@ -14,7 +14,8 @@ export default function Instructions() {
     const { currentUser, userLoggedIn } = useAuth();
     const [profileOpen, setProfileOpen] = useState(false);
 
-    const handleBack = () => navigate(-1);
+    // FIXED: Explicitly go back to User Input
+    const handleBack = () => navigate("/userInput");
 
     const handleLogout = async () => {
         try {
@@ -36,7 +37,6 @@ export default function Instructions() {
     const isGuest = !userLoggedIn || currentUser?.isAnonymous;
 
     // --- Components ---
-
     const QuickCard = ({ icon, title, text }: { icon: React.ReactNode, title: string, text: string }) => (
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-purple-50 flex flex-col items-center text-center gap-3 transition-transform hover:scale-[1.02]">
             <div className="text-3xl text-indigo-600 bg-indigo-50 p-3 rounded-full mb-1">
@@ -94,14 +94,20 @@ export default function Instructions() {
                                 {profileOpen && (
                                     <>
                                         <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)}></div>
-                                        <div className="absolute right-0 top-full mt-3 w-60 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 overflow-hidden ring-1 ring-black/5">
+                                        <div className="absolute right-0 top-full mt-3 w-64 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 overflow-hidden ring-1 ring-black/5">
                                              <div className="px-5 py-4 border-b bg-gray-50/50">
                                                 <p className="text-xs text-gray-400 uppercase font-bold tracking-wider">Signed in as</p>
                                                 <p className="text-sm font-semibold text-gray-800 truncate">{currentUser?.email}</p>
                                             </div>
-                                            <Link to="/output" className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 text-gray-700 transition-colors">
-                                                <FaHistory className="text-indigo-500" /> Past Measurements
+                                            
+                                            <Link to="/userInput" className="flex items-center gap-3 px-5 py-3 hover:bg-indigo-50 text-indigo-700 font-semibold transition-colors border-b border-gray-50">
+                                                <FaRulerHorizontal /> Get Measured
                                             </Link>
+
+                                            <Link to="/output" className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 text-gray-700 transition-colors">
+                                                <FaHistory className="text-gray-500" /> Past Measurements
+                                            </Link>
+                                            
                                             <button onClick={handleLogout} className="w-full text-left flex items-center gap-3 px-5 py-3 hover:bg-red-50 text-red-600 transition-colors border-t border-gray-100">
                                                 <FaSignOutAlt /> Sign Out
                                             </button>
@@ -186,7 +192,6 @@ export default function Instructions() {
                             </ol>
                         </div>
                         
-                        {/* Desktop Button placement (Hidden on mobile to allow sticky bottom) */}
                         <div className="hidden md:block mt-8">
                              <button onClick={navi}
                                 className="w-full py-4 rounded-xl bg-white text-indigo-900 font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg flex items-center justify-center gap-2">
