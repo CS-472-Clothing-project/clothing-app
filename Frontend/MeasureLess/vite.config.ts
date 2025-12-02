@@ -13,9 +13,7 @@ export default defineConfig({
     server: {
         host: true,
         hmr: {
-            protocol: "wss",
             host: "clothing-app-2n6a.onrender.com",
-            port: 443,
         },
     },
 });
