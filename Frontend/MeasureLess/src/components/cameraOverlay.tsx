@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 interface prop {
     height: number;
+    onComplete?: () => void;
 }
 
-export default function CameraOverlay({ height }: prop) {
+export default function CameraOverlay({ height, onComplete }: prop) {
     const videoRef = useRef<HTMLVideoElement | null>(null); // ref to video
     const canvasRef = useRef<HTMLCanvasElement | null>(null); // ref to canvas to convert to img
     const [stream, setStream] = useState<MediaStream | null>(null); // MediaStream 
@@ -76,6 +77,7 @@ export default function CameraOverlay({ height }: prop) {
                 break;
             case 5:
                 stopCamera();
+                if (onComplete) onComplete();
                 sendToBackend();
                 break;
         }
@@ -345,13 +347,7 @@ export default function CameraOverlay({ height }: prop) {
             </div>
         )
     }
-    if (step === 5) {
-        return (
-            <div>
-                Processing...
-            </div>
-        )
-    }
+
 
 }
 
